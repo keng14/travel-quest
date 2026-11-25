@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a9d8f">
+<title>Travel Quest - เกมสะสมเหรียญการเดินทาง</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2a9d8f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Travel Quest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#f3f7f6;--card:#fff;--ink:#1d2b2a;--muted:#5d6e6b;--brand:#2a9d8f;--brand2:#6d5ce6;--line:#dbe6e3;--ok:#1f8f55;--gold:#f5b82e;--warn:#c4283f;--ring:#6d5ce6;--safe-b:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+body{font-family:'Sarabun',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-tap-highlight-color:transparent;line-height:1.5}
+body.noscroll{overflow:hidden}
+header{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px rgba(42,157,143,.25);padding-top:env(safe-area-inset-top,0px)}
+.hbar{max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
+header h1{margin:0;font-size:20px;font-weight:800;line-height:1.2}
+header .sub{opacity:.92;font-size:13px}
+.langbtn{margin-left:auto;background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.6);border-radius:999px;min-height:40px;min-width:64px;padding:6px 14px;font:inherit;font-weight:800;cursor:pointer}
+.langbtn:hover{background:rgba(255,255,255,.28)}
+main{max-width:1100px;margin:0 auto;padding:16px 16px calc(110px + var(--safe-b))}
+.narrow{max-width:520px;margin:0 auto}
+.card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:12px}
+h2{margin:0 0 6px;font-size:19px}
+h3{margin:0;font-size:16px}
+.muted{color:var(--muted);font-size:13px}
+.err{color:var(--warn);font-size:14px;min-height:20px;margin:6px 0 0}
+label,.lbl{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+input,textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);min-height:46px}
+textarea{min-height:76px;resize:vertical}
+input:focus-visible,textarea:focus-visible{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(42,157,143,.2)}
+:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
+button{font-family:inherit;color:inherit}
+.btn{font:inherit;font-weight:700;border:0;border-radius:12px;min-height:46px;padding:11px 18px;background:var(--brand);color:#fff;cursor:pointer;font-size:15px;transition:transform .15s ease,filter .15s ease}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:#eef4f3;color:var(--ink)}
+.btn.danger{background:var(--warn)}
+.btn.small{min-height:44px;padding:8px 14px;font-size:14px;white-space:nowrap}
+.btn.wide{width:100%;margin-top:14px}
+.row{display:flex;gap:8px;align-items:center}
+.grow{flex:1;min-width:0}
+.wrap{flex-wrap:wrap}
+.dates{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.iconbtn{border:0;background:#f1f5f4;border-radius:999px;min-width:44px;min-height:44px;font-size:18px;cursor:pointer}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 12px}
+.toolbar .btn{flex:1 1 auto}
+
+/* guide */
+details.guide summary{cursor:pointer;font-weight:800;list-style:none;display:flex;align-items:center;gap:8px;min-height:32px}
+details.guide summary::-webkit-details-marker{display:none}
+details.guide summary::after{content:'▾';margin-left:auto;color:var(--muted)}
+details.guide[open] summary::after{content:'▴'}
+.steps{margin:10px 0 0;padding-left:22px}
+.steps li{margin:4px 0}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.legend span{background:#f1f5f4;border-radius:999px;padding:4px 10px;font-size:13px}
+
+/* plan */
+.daygrid{display:grid;gap:10px}
+@media(min-width:700px){.daygrid{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.daygrid{grid-template-columns:1fr 1fr 1fr}}
+.daycard{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:#fff;border:2px solid transparent;border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);cursor:pointer;font:inherit;min-height:84px;transition:border-color .15s ease,transform .15s ease}
+.daycard:hover{border-color:var(--brand)}
+.daycard:active{transform:scale(.99)}
+.daycard.empty{border-color:#f2c7cf;background:#fffafb}
+.daycard .chips{display:block;margin-top:4px;font-size:18px;letter-spacing:2px;min-height:24px}
+.count{flex:0 0 auto;font-weight:800;color:var(--brand);background:#e7f5f2;border-radius:999px;padding:4px 10px;font-size:14px}
+.daycard.empty .count{color:var(--warn);background:#fde8ec}
+.editlbl{display:block;font-size:12px;color:var(--brand);font-weight:700;margin-top:2px}
+.startbar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);box-shadow:0 -2px 12px rgba(0,0,0,.08);z-index:9;padding:10px 16px calc(10px + var(--safe-b))}
+.startbar .in{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.startbar .err{flex:1 1 220px;margin:0}
+
+/* play */
+.play-grid{display:grid;gap:12px}
+@media(min-width:900px){.play-grid{grid-template-columns:420px 1fr;align-items:start}.play-side{position:sticky;top:84px}}
+.bar{height:12px;background:#dfeae8;border-radius:999px;overflow:hidden;margin:10px 0 4px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));transition:width .6s ease}
+.bar>i.full{background:var(--ok)}
+.champion{text-align:center;background:linear-gradient(135deg,#fff7de,#ffffff);border:2px solid var(--gold)}
+.champion .cup{font-size:44px;line-height:1}
+.stagebtn{display:flex;gap:12px;align-items:center;width:100%;min-height:56px;background:none;border:0;padding:0;text-align:left;font:inherit;cursor:pointer}
+.badge{flex:0 0 42px;height:42px;border-radius:50%;background:#eef4f3;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px}
+.badge.cur{background:var(--brand);color:#fff;box-shadow:0 0 0 4px rgba(42,157,143,.2)}
+.badge.ok{background:var(--gold);color:#fff;box-shadow:0 0 0 4px rgba(245,184,46,.25)}
+.stage.current{outline:2px solid var(--brand)}
+.items{margin-top:12px;border-top:1px solid var(--line);padding-top:6px}
+.item{display:flex;align-items:center;gap:4px}
+.item label{margin:0;font-weight:400;font-size:15px;display:flex;gap:10px;align-items:center;flex:1;cursor:pointer;min-height:46px;padding:4px 0}
+.item input[type=checkbox]{width:22px;height:22px;min-height:0;accent-color:var(--brand);flex:0 0 auto;margin:0}
+.ci{font-size:18px;flex:0 0 auto}
+.done{text-decoration:line-through;color:var(--muted)}
+.x{border:0;background:none;color:#7b8a87;font-size:17px;cursor:pointer;min-width:44px;min-height:44px;border-radius:999px}
+.x:hover{background:#f1f5f4;color:var(--warn)}
+.art{width:100%;height:auto;border-radius:14px;display:block;margin:10px 0 2px}
+.thumbs{display:flex;gap:6px;margin-top:8px;overflow-x:auto}
+.thumbs img{width:56px;height:56px;border-radius:10px;object-fit:cover;flex:0 0 auto}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:8px}
+.photos .ph{position:relative}
+.photos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block}
+.photos .x{position:absolute;top:2px;right:2px;background:rgba(255,255,255,.9);border-radius:999px;min-width:36px;min-height:36px}
+.addphoto{display:flex;align-items:center;justify-content:center;min-height:88px;border:2px dashed var(--brand);border-radius:12px;color:var(--brand);font-weight:700;cursor:pointer;background:#f6fbfa}
+.addphoto input{display:none}
+.addphoto.disabled{opacity:.5;cursor:default}
+.field{margin-top:12px}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(20,30,30,.45);display:flex;align-items:flex-end;justify-content:center;z-index:40}
+.modal.center{align-items:center;padding:16px}
+.sheet{background:#fff;width:100%;max-width:560px;max-height:90vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + var(--safe-b));animation:up .25s ease-out}
+.modal.center .sheet{border-radius:22px;max-width:380px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.modal.wide .sheet{max-width:640px}
+@media(min-width:700px){.modal{align-items:center;padding:16px}.sheet{border-radius:22px}}
+.sheet-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:4px}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cat{display:flex;flex-direction:column;align-items:center;gap:2px;background:#f6f9f8;border:2px solid transparent;border-radius:14px;padding:8px 4px;min-height:64px;cursor:pointer;font:inherit;font-size:13px;font-weight:600}
+.cat .ci{font-size:24px}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+}
+.cat.on{border-color:var(--brand);background:#e7f5f2}
+.sugs{display:flex;flex-wrap:wrap;gap:8px}
+.sug{border:1.5px dashed var(--brand);background:#fff;color:var(--brand);border-radius:999px;min-height:40px;padding:6px 14px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.sug:hover{background:#e7f5f2}
+.elist .item{border-bottom:1px solid var(--line);padding:4px 0;gap:10px}
+.elist .item .t{flex:1;min-width:0}
+.pop{text-align:center}
+.pop h2{font-size:20px;margin:6px 0}
+.coin{width:120px;height:120px;margin:4px auto;display:block;animation:bob 1s infinite alternate}
+.stars{font-size:20px;letter-spacing:3px;margin:6px 0}
+
+/* infographic */
+.modal.ig .sheet{max-width:680px;padding:0;overflow-x:hidden;background:#fbf8ff}
+.ig{--pk:#c2185b;font-size:15px}
+.ig-hero{position:relative;color:#fff;padding:22px 20px 20px;background:linear-gradient(160deg,#2a9d8f 0%,#4f7fd8 55%,#6d5ce6 100%);overflow:hidden}
+.ig-hero svg.sky{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.ig-hero>*{position:relative}
+.ig-tag{display:inline-block;background:#ffd45e;color:#3b2a00;font-weight:800;font-size:12px;letter-spacing:.08em;padding:4px 10px;border-radius:999px;transform:rotate(-2deg)}
+.ig-title{font-size:clamp(26px,7vw,38px);font-weight:800;line-height:1.1;margin:10px 0 4px;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.15);word-break:break-word}
+.ig-dates{font-weight:600;opacity:.95}
+.ig-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.ig-stat{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.45);border-radius:14px;padding:8px;text-align:center;backdrop-filter:blur(4px)}
+.ig-stat b{display:block;font-size:24px;line-height:1.1}
+.ig-stat span{font-size:12px;opacity:.95}
+.ig-xp{margin-top:14px;background:rgba(0,0,0,.18);border-radius:999px;height:14px;overflow:hidden;border:2px solid rgba(255,255,255,.55)}
+.ig-xp i{display:block;height:100%;background:repeating-linear-gradient(45deg,#ffd45e 0 10px,#ffc21f 10px 20px)}
+.ig-xpl{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-top:4px}
+.ig-loot{display:flex;flex-wrap:wrap;gap:6px;padding:14px 16px 2px}
+.ig-loot span{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1.5px solid #e6def8;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:700;color:#3d3566}
+.ig-loot .ico{width:16px;height:16px;color:#6d5ce6}
+.ig-path{position:relative;padding:14px 16px 6px 16px}
+.ig-path::before{content:'';position:absolute;left:37px;top:24px;bottom:24px;border-left:4px dotted #c9bdf0}
+.ig-stop{position:relative;display:flex;gap:12px;margin-bottom:16px}
+.ig-node{flex:0 0 46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;background:var(--ac);box-shadow:0 0 0 4px #fbf8ff,0 4px 10px rgba(0,0,0,.15);z-index:1}
+.ig-node svg{width:46px;height:46px}
+.ig-node .ico{width:22px;height:22px;color:#fff}
+.ig-card{flex:1;min-width:0;background:var(--bg);border-radius:18px;padding:12px 14px;box-shadow:0 3px 0 rgba(0,0,0,.06),0 6px 16px rgba(60,40,120,.08);border:2px solid #fff}
+.ig-top{display:flex;gap:10px;align-items:flex-start}
+.ig-head{flex:1;min-width:0}
+.ig-chip{display:inline-block;background:var(--ac);color:#fff;font-weight:800;font-size:12px;letter-spacing:.04em;padding:3px 10px;border-radius:999px}
+.ig-card h3{margin:6px 0 0;font-size:17px;color:#1d1b2e}
+.ig-date{font-size:13px;color:#4d4866}
+.ig-thumb{flex:0 0 84px;width:84px;height:50px;border-radius:10px;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.ig-thumb .art{width:100%;height:100%;display:block;margin:0;border-radius:0}
+.ig-place{display:inline-flex;align-items:center;gap:4px;margin-top:8px;background:#fff;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700;color:var(--ac)}
+.ig-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.ig-list li{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.7);border-radius:10px;padding:5px 8px;font-size:14px}
+.ig-list .ico{width:18px;height:18px;color:var(--ac)}
+.ig-list .ck{margin-left:auto;flex:0 0 20px;height:20px;border-radius:6px;border:2px solid var(--ac);display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+.ig-list .ck.on{background:var(--ac)}
+.ig-list .t{flex:1;min-width:0}
+.ig-list .t.done{text-decoration:line-through;color:#6f6a86}
+.ig-empty{font-size:13px;color:#6f6a86;margin-top:8px}
+.ig-extra{display:flex;gap:10px;align-items:flex-start;margin-top:10px;flex-wrap:wrap}
+.ig-note{flex:1 1 160px;background:#fff3a8;padding:8px 10px 10px;border-radius:3px;font-size:13px;color:#4a3f00;box-shadow:0 3px 8px rgba(0,0,0,.12);transform:rotate(-1.2deg);position:relative}
+.ig-note::before{content:'';position:absolute;top:-7px;left:50%;width:44px;height:14px;margin-left:-22px;background:rgba(255,255,255,.65);transform:rotate(2deg)}
+.ig-pol{background:#fff;padding:5px 5px 14px;box-shadow:0 3px 8px rgba(0,0,0,.15);transform:rotate(2deg);flex:0 0 auto}
+.ig-pol img{width:88px;height:88px;object-fit:cover;display:block}
+.ig-end{margin:4px 16px 16px;border-radius:20px;padding:16px;text-align:center;background:linear-gradient(135deg,#fff3cf,#ffe2b8);border:2px dashed #e5a50a}
+.ig-end .coin{width:64px;height:64px}
+.ig-end h3{margin:4px 0 2px;color:#5a3d00}
+.ig-coins{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:8px}
+.ig-coins i{width:22px;height:22px;border-radius:50%;background:#e9e2d4;box-shadow:inset 0 -2px 0 rgba(0,0,0,.08)}
+.ig-coins i.on{background:radial-gradient(circle at 40% 35%,#ffe08a 0 45%,#f5b82e 46%)}
+.ig-actions{padding:0 16px 16px}
+.ig-chiprow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ig-complete{display:inline-block;background:#1f8f55;color:#fff;font-weight:800;font-size:12px;letter-spacing:.06em;padding:3px 10px;border-radius:999px}
+.start-big{width:100%;min-height:72px;font-size:24px;font-weight:800;letter-spacing:.02em;border-radius:22px;background:linear-gradient(135deg,#2a9d8f 0%,#6d5ce6 100%);color:#fff;box-shadow:0 10px 24px rgba(109,92,230,.38);animation:startPulse 1.8s ease-in-out infinite}
+.start-big:hover{filter:brightness(1.05)}
+@keyframes startPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+@media(min-width:600px){.ig-thumb{flex-basis:112px;width:112px;height:66px}}
+.memo{font-style:italic;color:var(--muted);font-size:14px;margin-top:4px}
+.toast{position:fixed;left:50%;bottom:calc(20px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:60;opacity:0;pointer-events:none;transition:opacity .25s ease;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+.hidden{display:none!important}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.ico{width:20px;height:20px;flex:0 0 auto;color:var(--brand);stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+.cat .ico{width:28px;height:28px}
+.chips .ico{width:18px;height:18px;margin-right:4px}
+.item .ico{width:22px;height:22px}
+.legend .ico{width:16px;height:16px;vertical-align:-3px}
+.hero-art .art{margin:0 0 12px}
+.intro{max-width:460px;margin:0 auto;text-align:center;padding-top:6px}
+.intro .art{max-width:340px;margin:0 auto 14px;box-shadow:0 10px 30px rgba(42,157,143,.2)}
+.intro-title{font-size:26px;font-weight:800;margin:4px 0 2px}
+.langs{display:grid;gap:12px;margin-top:18px}
+.langcard{display:flex;align-items:center;gap:14px;background:#fff;border:2px solid var(--line);border-radius:18px;padding:16px;min-height:72px;font:inherit;font-size:18px;cursor:pointer;text-align:left;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:transform .15s ease,border-color .15s ease}
+.langcard:hover{border-color:var(--brand)}
+.langcard:active{transform:scale(.98)}
+.flag{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:0 0 auto}
+.dots{display:flex;gap:8px;justify-content:center;margin:0 0 12px}
+.dots i{width:10px;height:10px;border-radius:999px;background:var(--line);transition:width .25s ease}
+.dots i.on{background:var(--brand);width:26px}
+.intro-nav{justify-content:center;margin-top:18px}
+.intro-nav .btn{min-width:130px}
+.linkbtn{background:none;border:0;color:var(--muted);font:inherit;cursor:pointer;margin-top:10px;min-height:44px;text-decoration:underline}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ===== colorful theme (v2) ===== */
+.hbar .fxbtn{margin-left:auto;font-size:13px;min-width:0}
+#langbtn{margin-left:0}
+.tpl-row{display:flex;gap:8px;flex-wrap:wrap}
+.tpl-row .btn{flex:1 1 130px;min-height:52px;background:#fff;color:var(--grape);box-shadow:inset 0 0 0 2px #e4dcff}
+.tpl-row .btn:hover{background:#faf8ff}
+.bk-nudge{margin-top:10px;background:#eef9f5;border-radius:12px;padding:10px;font-size:14px}
+:root{--pink:#ff5d8f;--sun:#ffb81c;--mint:#18b89a;--sky:#3b8ee8;--grape:#7b5cf0;--peach:#ff8a5b}
+body{background:
+  radial-gradient(900px 500px at 8% -10%,rgba(255,93,143,.16),transparent 60%),
+  radial-gradient(800px 480px at 100% 0%,rgba(59,142,232,.18),transparent 60%),
+  radial-gradient(700px 500px at 50% 110%,rgba(255,184,28,.16),transparent 60%),
+  #f7f5ff}
+header{background:linear-gradient(120deg,var(--mint) 0%,var(--sky) 45%,var(--grape) 80%,var(--pink) 100%);box-shadow:0 6px 20px rgba(123,92,240,.35)}
+header h1{text-shadow:0 2px 0 rgba(0,0,0,.12)}
+.card{border:2px solid #fff;box-shadow:0 6px 18px rgba(92,70,200,.10)}
+.btn{background:linear-gradient(120deg,var(--mint),var(--sky));box-shadow:0 6px 14px rgba(59,142,232,.28)}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:#fff;color:var(--grape);box-shadow:inset 0 0 0 2px #e4dcff}
+.btn.ghost:hover{background:#faf8ff}
+.daycard{--c:var(--pink);box-shadow:inset 7px 0 0 var(--c),0 6px 16px rgba(92,70,200,.10);background:linear-gradient(90deg,color-mix(in srgb,var(--c) 11%,#fff),#fff 45%)}
+.daycard:nth-child(5n+2){--c:var(--sky)}
+.daycard:nth-child(5n+3){--c:var(--mint)}
+.daycard:nth-child(5n+4){--c:var(--sun)}
+.daycard:nth-child(5n+5){--c:var(--grape)}
+.daycard:hover{border-color:var(--c)}
+.daycard.empty{box-shadow:inset 7px 0 0 var(--warn),0 6px 16px rgba(196,40,63,.08);background:#fff6f8}
+.cat{background:#fff;box-shadow:0 3px 8px rgba(92,70,200,.10)}
+.cat[data-cat="travel"]{background:#e6f1ff;color:#1f5fb0}
+.cat[data-cat="eat"]{background:#ffeef3;color:#b0245a}
+.cat[data-cat="shop"]{background:#fff4df;color:#9a5a00}
+.cat[data-cat="sight"]{background:#e7fbf6;color:#0f7f68}
+.cat[data-cat="temple"]{background:#fbf0ff;color:#7a2fa8}
+.cat[data-cat="nature"]{background:#eefbe6;color:#3f7d14}
+.cat[data-cat="rest"]{background:#fff0ea;color:#b4441c}
+.cat[data-cat="pack"]{background:#f0eeff;color:#4d3fb8}
+.cat.on{box-shadow:inset 0 0 0 3px currentColor;transform:translateY(-1px)}
+.cat .ci{background:#fff;border-radius:12px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;margin-bottom:2px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.cat .ci .ico{color:inherit}
+.startbar{background:linear-gradient(180deg,rgba(247,245,255,0),#f7f5ff 35%)}
+.start-big{background:linear-gradient(120deg,var(--pink) 0%,var(--peach) 45%,var(--sun) 100%);box-shadow:0 12px 26px rgba(255,93,143,.40);text-shadow:0 2px 0 rgba(0,0,0,.12)}
+.langcard:hover{border-color:var(--pink)}
+.flag{background:linear-gradient(135deg,var(--pink),var(--grape))}
+.dots i.on{background:linear-gradient(90deg,var(--pink),var(--sun))}
+.budget{background:#f7fbff;border:2px solid #dbe9fb;border-radius:14px;padding:10px;margin-top:10px}
+.budget input[type=number]{font:inherit;font-size:16px;padding:8px;border:2px solid var(--line);border-radius:10px;width:140px;min-height:40px}
+.budget.over{background:#fff5f6;border-color:#f5c2cb}
+.spent-line{font-size:14px;margin-top:6px;color:var(--muted)}
+.budget.over .spent-line{color:var(--warn)}
+.spend{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.spend li{display:flex;gap:8px;align-items:center;background:#fff;border-radius:10px;padding:6px 8px;font-size:14px}
+.spend-add{margin-top:8px}
+.spend-add input{font:inherit;font-size:15px;padding:8px;border:2px solid var(--line);border-radius:10px;min-height:40px;flex:1 1 120px}
+.spend-add .btn{min-height:40px}
+</style>
+</head>
+<body>
+<header>
+  <div class="hbar">
+    <div>
+      <h1>🧳 Travel Quest</h1>
+      <div class="sub" id="hsub"></div>
+    </div>
+    <button class="langbtn fxbtn" data-act="fx" id="fxbtn"></button>
+    <button class="langbtn" data-act="lang" id="langbtn"></button>
+  </div>
+</header>
+<main id="view"></main>
+<div id="modal" class="modal hidden"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<script>
+/* ================= data & i18n ================= */
+const KEY = 'travelquest.v3', LKEY = 'travelquest.lang', FXKEY = 'travelquest.fx', BKEY = 'travelquest.backupAt';
+const fxOn = () => { try { return localStorage.getItem(FXKEY) !== '0'; } catch(e){ return true; } };
+const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const COLORS = ['#ff7a59','#2a9d8f','#6d5ce6','#f5b82e','#e5577e','#4c9be8'];
+const MAX_PHOTOS = 6;
+
+const CATS = [
+  { id:'travel', icon:'🚗', th:'เดินทาง',   en:'Travel',   sug:{ th:['ขึ้นเครื่องบิน / รถไฟ','เช็คอินที่พัก','นั่งรถไปจุดหมาย'], en:['Catch the flight / train','Hotel check-in','Ride to the next spot'] } },
+  { id:'eat',    icon:'🍜', th:'กินข้าว',   en:'Eat',      sug:{ th:['อาหารเช้า','ลองอาหารท้องถิ่น','แวะคาเฟ่'], en:['Breakfast','Try local food','Café stop'] } },
+  { id:'shop',   icon:'🛍️', th:'ชอปปิ้ง',   en:'Shopping', sug:{ th:['ซื้อของฝาก','เดินตลาดกลางคืน'], en:['Buy souvenirs','Night market'] } },
+  { id:'sight',  icon:'📸', th:'เที่ยวชม',  en:'Sights',   sug:{ th:['ถ่ายรูปจุดชมวิว','เข้าพิพิธภัณฑ์'], en:['Photo at a viewpoint','Visit a museum'] } },
+  { id:'temple', icon:'🛕', th:'ไหว้พระ',   en:'Temple',   sug:{ th:['ไหว้พระ ทำบุญ'], en:['Visit a temple'] } },
+  { id:'nature', icon:'🏞️', th:'ธรรมชาติ', en:'Nature',   sug:{ th:['เดินป่า / น้ำตก','เล่นทะเล'], en:['Hike / waterfall','Beach time'] } },
+  { id:'rest',   icon:'🏨', th:'พักผ่อน',   en:'Rest',     sug:{ th:['นวด / สปา','เช็คเอาท์ที่พัก'], en:['Massage / spa','Hotel check-out'] } },
+  { id:'pack',   icon:'🎒', th:'เตรียมของ', en:'Packing',  sug:{ th:['ครีมกันแดด','ร่ม','อุปกรณ์อาบน้ำ'], en:['Sunscreen','Umbrella','Toiletries'] } },
+  { id:'other',  icon:'⭐', th:'อื่นๆ',     en:'Other',    sug:{ th:[], en:[] } },
+];
+const CAT = Object.fromEntries(CATS.map(c => [c.id, c]));
+
+/* consistent line icons (24px grid) used in the UI instead of emoji */
+const ICON = {
+  travel:'<path d="M3 13l18-7-7 18-3-7-8-4z"/>',
+  eat:'<path d="M7 3v8a2 2 0 0 0 2 2v8M5 3v5M9 3v5M17 21V3c-2 1-3 4-3 8h3"/>',
+  shop:'<path d="M5 8h14l-1 13H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
+  sight:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l2-3h4l2 3"/><circle cx="12" cy="13.5" r="3.5"/>',
+  temple:'<path d="M2 10l10-6 10 6zM5 10v11M19 10v11M9 21v-7M15 21v-7M3 21h18"/>',
+  nature:'<path d="M2 20l7-12 4 6 3-4 6 10z"/>',
+  rest:'<path d="M3 18V6M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/>',
+  pack:'<rect x="6" y="6" width="12" height="15" rx="4"/><path d="M9 6V4h6v2M9 12h6M6 15h12"/>',
+  other:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+};
+const svgOf = id => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[id] || ICON.other}</svg>`;
+
+/* first-run language choice + short tour */
+const INTRO = {
+  th: { choose:'เลือกภาษา', next:'ถัดไป', prev:'ก่อนหน้า', skip:'ข้าม', start:'เริ่มใช้งาน', howto:'📖 วิธีเล่น', slides:[
+    { t:'ตั้งชื่อทริปและวันไป-กลับ', d:'ระบบแบ่งทุกวันของทริปเป็นเหรียญให้อัตโนมัติ' },
+    { t:'เพิ่มภารกิจรายวัน', d:'แตะการ์ดวัน เลือกหมวด แล้วแตะภารกิจแนะนำหรือพิมพ์เอง' },
+    { t:'ติ๊กให้ครบ ได้เหรียญ', d:'ทำภารกิจทุกข้อของวันนั้นให้ครบ แล้วจะได้เหรียญของวันนั้น' },
+    { t:'สะสมครบ ได้ถ้วยแชมป์', d:'เก็บเหรียญให้ครบทุกวันเพื่อรับถ้วยแชมป์ แล้วดูอินโฟกราฟิกหรือสำรองข้อมูลได้' } ] },
+  en: { choose:'Choose your language', next:'Next', prev:'Back', skip:'Skip', start:'Get started', howto:'📖 How to play', slides:[
+    { t:'Name your trip and dates', d:'Every day of the trip becomes a coin automatically' },
+    { t:'Add missions for each day', d:'Tap a day card, pick a category, then tap a suggestion or type your own' },
+    { t:'Tick them all to earn the coin', d:'Finish every mission in a day to earn that day\'s coin' },
+    { t:'Collect them all for the trophy', d:'Earn a coin on every day to win the trophy, then view the infographic or back up your data' } ] },
+};
+const INTRO_ART = [
+  `<rect width="240" height="160" fill="#dff4f0"/><circle cx="196" cy="32" r="14" fill="#f5b82e"/><rect x="58" y="56" width="124" height="88" rx="14" fill="#ff7a59"/><path d="M96,56 V42 Q96,30 108,30 H134 Q146,30 146,42 V56" fill="none" stroke="#c85a3f" stroke-width="9"/><rect x="58" y="92" width="124" height="8" fill="#c85a3f" opacity=".5"/><rect x="86" y="74" width="68" height="46" rx="6" fill="#fff"/><rect x="86" y="74" width="68" height="12" rx="6" fill="#2a9d8f"/><g fill="#5d6e6b"><rect x="94" y="94" width="10" height="8" rx="2"/><rect x="110" y="94" width="10" height="8" rx="2"/><rect x="126" y="94" width="10" height="8" rx="2"/><rect x="94" y="106" width="10" height="8" rx="2"/><rect x="110" y="106" width="10" height="8" rx="2"/></g>`,
+  `<rect width="240" height="160" fill="#f6f1ff"/><rect x="66" y="26" width="108" height="124" rx="14" fill="#fff"/><rect x="100" y="18" width="40" height="16" rx="6" fill="#6d5ce6"/><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M80,62 l6,6 l10,-12" stroke="#2fb36b" stroke-width="5"/><path d="M80,92 l6,6 l10,-12" stroke="#2fb36b" stroke-width="5"/><path d="M80,122 l6,6 l10,-12" stroke="#c9d3d1" stroke-width="5"/></g><g fill="#5d6e6b" opacity=".5"><rect x="104" y="58" width="48" height="8" rx="4"/><rect x="104" y="88" width="40" height="8" rx="4"/><rect x="104" y="118" width="44" height="8" rx="4" opacity=".3"/></g>`,
+  `<rect width="240" height="160" fill="#fff7de"/><ellipse cx="90" cy="112" rx="44" ry="12" fill="#f5b82e"/><ellipse cx="90" cy="100" rx="44" ry="12" fill="#ffd45e"/><ellipse cx="90" cy="88" rx="44" ry="12" fill="#f5b82e"/><ellipse cx="90" cy="76" rx="44" ry="12" fill="#ffd45e"/><circle cx="170" cy="78" r="40" fill="#f5b82e"/><circle cx="170" cy="78" r="31" fill="#ffe08a"/><path d="M170,58 L176,74 L193,75 L179,85 L184,101 L170,91 L156,101 L161,85 L147,75 L164,74 Z" fill="#f5b82e"/>`,
+  `<rect width="240" height="160" fill="#e8f7f4"/><path d="M84,38 H156 V72 Q156,108 120,112 Q84,108 84,72 Z" fill="#f5b82e"/><path d="M84,50 H66 Q62,80 88,88" fill="none" stroke="#f5b82e" stroke-width="7"/><path d="M156,50 H174 Q178,80 152,88" fill="none" stroke="#f5b82e" stroke-width="7"/><rect x="110" y="112" width="20" height="16" fill="#e5a50a"/><rect x="90" y="126" width="60" height="12" rx="4" fill="#e5a50a"/><path d="M48,30 l3,7 l7,1 l-5,5 l1,7 l-6,-3 l-6,3 l1,-7 l-5,-5 l7,-1z M192,24 l3,7 l7,1 l-5,5 l1,7 l-6,-3 l-6,3 l1,-7 l-5,-5 l7,-1z" fill="#ff9f6b"/>`,
+];
+const svgWrap = body => `<svg class="art" viewBox="0 0 240 160" aria-hidden="true">${body}</svg>`;
+
+const ITEM = {
+  passport:{ th:'หนังสือเดินทาง / บัตรประชาชน', en:'Passport / ID card' },
+  ticket:  { th:'ตั๋วเครื่องบิน / รถ / เรือ',     en:'Flight / bus / boat tickets' },
+  meds:    { th:'ยาประจำตัว',                  en:'Personal medicine' },
+  charger: { th:'สายชาร์จและแบตสำรอง',          en:'Chargers & power bank' },
+  clothes: { th:'เสื้อผ้าและชุดชั้นใน',          en:'Clothes' },
+  money:   { th:'เงินสด / บัตรเดบิต-เครดิต',     en:'Cash / cards' },
+  goDest:  { th:'เดินทางไปจุดหมาย',             en:'Travel to the destination' },
+  sightsee:{ th:'เที่ยวชมสถานที่',              en:'Go sightseeing' },
+  goHome:  { th:'เดินทางกลับบ้าน',              en:'Travel back home' },
+};
+const PACK_KEYS = ['passport','ticket','meds','charger','clothes','money'];
+
+const T = {
+  th: {
+    sub:'สะสมเหรียญทีละวัน จนได้ถ้วยแชมป์วันกลับบ้าน', langBtn:'EN', langName:'Switch to English',
+    newTrip:'🗺️ สร้างทริปใหม่', newTripDesc:'ระบุชื่อทริปและวันไป-กลับ จากนั้นวางแผนภารกิจของแต่ละวัน',
+    tripName:'ชื่อทริป', tripPh:'เช่น เที่ยวเชียงใหม่ 3 วัน', start:'วันไป', end:'วันกลับ', next:'ถัดไป: วางแผนภารกิจ →',
+    errDates:'กรุณาเลือกวันไปและวันกลับ', errOrder:'วันกลับต้องไม่ก่อนวันไป', errLong:'ทริปยาวได้ไม่เกิน 60 วัน', defaultTrip:'ทริปของฉัน',
+    planTitle:'📝 วางแผนภารกิจ', planDesc:'แตะแต่ละวันเพื่อเพิ่มภารกิจ ทุกวันต้องมีอย่างน้อย 1 ภารกิจ',
+    guideTitle:'💡 ตัวช่วยไกด์', guide:['แตะการ์ดของแต่ละวันเพื่อเพิ่มภารกิจ สถานที่ และรูป','เลือกหมวด เช่น เดินทาง กินข้าว ชอปปิ้ง แล้วแตะภารกิจแนะนำ หรือพิมพ์เอง','ติ๊กภารกิจให้ครบทุกข้อในวันนั้นเพื่อรับเหรียญของวันนั้น','สะสมเหรียญให้ครบทุกวันเพื่อรับถ้วยแชมป์ แล้วดูอินโฟกราฟิกหรือสำรองข้อมูลได้'],
+    pack:'เตรียมตัวก่อนเดินทาง', before:'ก่อนวันเดินทาง', day:n=>`วันที่ ${n}`, depart:'ออกเดินทาง', home:'วันกลับบ้าน',
+    nMissions:n=>`${n} ภารกิจ`, tapEdit:'แตะเพื่อเพิ่ม / แก้ไข', noMission:'ยังไม่มีภารกิจ',
+    quick:'เลือกหมวด', suggestions:'ภารกิจแนะนำ (แตะเพื่อเพิ่ม)', addPh:'พิมพ์ภารกิจ เช่น ไปวัดพระธาตุ', add:'เพิ่ม', missions:'ภารกิจของวันนี้', done:'เสร็จ', close:'ปิด', del:'ลบภารกิจ',
+    startGame:'🎮 เริ่มเกม', emptyDays:list=>`ยังไม่มีภารกิจใน: ${list}`, fill:'เติมภารกิจแนะนำให้วันที่ว่าง',
+    reset:'รีเซ็ต', resetQ:'ล้างข้อมูลทั้งหมดและเริ่มทริปใหม่?', resetD:'ภารกิจ รูป และเหรียญทั้งหมดจะถูกลบ', cancel:'ยกเลิก', confirmReset:'ล้างข้อมูล',
+    editPlan:'✏️ แก้แผน', editMissions:'✏️ แก้ไขภารกิจ',
+    coinsCount:(a,b)=>`🪙 ${a}/${b} เหรียญ`, coinsDesc:n=>`สะสมแล้ว ${n}`, pending:'ยังไม่เก็บเหรียญ', earned:'ได้เหรียญแล้ว',
+    progress:p=>`สะสมแล้ว ${p}%`, finished:'🏆 สะสมครบทุกวันแล้ว กลับถึงบ้านอย่างปลอดภัย!',
+    champion:'แชมป์ทริป!', championDesc:'สะสมเหรียญครบทุกวันแล้ว',
+    coinEarned:n=>`ได้เหรียญวันที่ ${n}!`, coinVictory:'ได้ถ้วยแชมป์แล้ว!', coinTitles:['เก่งมาก! 🎉','ยอดเยี่ยมไปเลย! 🥳','ไปต่อได้เลย! 🚀','ภารกิจสำเร็จ! ⭐'],
+    cont:'ไปต่อ', hint:'แตะเกาะเพื่อเปิดวันนั้น', sceneLabel:'แผนที่ 3 มิติของเส้นทาง', art:t=>`ภาพวัน ${t}`,
+    place:'สถานที่', placePh:'เช่น วัดพระธาตุดอยสุเทพ', memo:'บันทึกสั้นๆ', memoPh:'เช่น ร้านนี้อร่อย ต้องจองล่วงหน้า', photos:'รูปภาพ', addPhoto:'＋ เพิ่มรูป', photoMax:`เพิ่มได้ไม่เกิน ${MAX_PHOTOS} รูปต่อวัน`, photoErr:'พื้นที่เก็บข้อมูลเต็ม ลองลบรูปบางรูป', removePhoto:'ลบรูป',
+    infographic:'🖼️ อินโฟกราฟิก', infoTitle:'แผนการเดินทาง', copyText:'📋 คัดลอกเป็นข้อความ', copied:'คัดลอกแล้ว', copyFail:'คัดลอกไม่ได้ ให้เลือกข้อความเองแล้วคัดลอก',
+    backup:'💾 สำรอง / นำเข้า', backupTitle:'สำรองข้อมูล', backupDesc:'คัดลอกข้อความนี้เก็บไว้ หรือวางในช่องนำเข้าบนเครื่องอื่น', copy:'คัดลอก',
+    importTitle:'นำเข้าข้อมูล', importDesc:'วางข้อความสำรองแล้วกดนำเข้า ทริปปัจจุบันจะถูกแทนที่', importBtn:'นำเข้า', importBad:'ข้อมูลไม่ถูกต้อง', importOk:'นำเข้าแล้ว',
+    day1Edit:'เลือกวันนี้เพื่อแก้ไข', noPlace:'ยังไม่ระบุสถานที่', noItems:'ยังไม่มีภารกิจ', emptyDayCoin:'ยังไม่มีภารกิจ',
+    importBtnBack:'กลับ', titleInfo:'แผนการเดินทาง', totalDays:n=>`${n} วัน`,
+  },
+  en: {
+    sub:'Collect a coin each day and win the trophy on the way home', langBtn:'ไทย', langName:'เปลี่ยนเป็นภาษาไทย',
+    newTrip:'🗺️ New trip', newTripDesc:'Enter the trip name and dates, then plan missions for each day',
+    tripName:'Trip name', tripPh:'e.g. 3 days in Chiang Mai', start:'Departure', end:'Return', next:'Next: plan missions →',
+    errDates:'Please pick departure and return dates', errOrder:'Return date cannot be before departure', errLong:'Trips can be up to 60 days', defaultTrip:'My trip',
+    planTitle:'📝 Plan your missions', planDesc:'Tap each day to add missions. Every day needs at least 1 mission.',
+    guideTitle:'💡 Quick guide', guide:['Tap a day card to add missions, a place and photos','Pick a category such as Travel, Eat or Shopping, then tap a suggestion or type your own','Tick every mission in a day to earn that day\'s coin','Collect every coin to win the trophy, then view the infographic or back up your data'],
+    pack:'Get ready to go', before:'Before the trip', day:n=>`Day ${n}`, depart:'Departure', home:'Home day',
+    nMissions:n=>`${n} mission${n===1?'':'s'}`, tapEdit:'Tap to add / edit', noMission:'No missions yet',
+    quick:'Pick a category', suggestions:'Suggestions (tap to add)', addPh:'Type a mission, e.g. visit Doi Suthep', add:'Add', missions:'Missions for this day', done:'Done', close:'Close', del:'Delete mission',
+    startGame:'🎮 Start game', emptyDays:list=>`No missions yet in: ${list}`, fill:'Fill empty days with suggestions',
+    reset:'Reset', resetQ:'Clear everything and start a new trip?', resetD:'All missions, photos and coins will be deleted', cancel:'Cancel', confirmReset:'Clear data',
+    editPlan:'✏️ Edit plan', editMissions:'✏️ Edit missions',
+    coinsCount:(a,b)=>`🪙 ${a}/${b} coins`, coinsDesc:n=>`${n} collected`, pending:'Coin not earned yet', earned:'Coin earned',
+    progress:p=>`${p}% collected`, finished:'🏆 Every coin collected. Home safe and sound!',
+    champion:'Trip champion!', championDesc:'You collected a coin every day',
+    coinEarned:n=>`Day ${n} coin earned!`, coinVictory:'Trophy unlocked!', coinTitles:['Nice work! 🎉','Awesome! 🥳','Onward! 🚀','Mission complete! ⭐'],
+    cont:'Continue', hint:'Tap an island to open that day', sceneLabel:'3D map of the route', art:t=>`Illustration: ${t}`,
+    place:'Place', placePh:'e.g. Wat Phra That Doi Suthep', memo:'Short note', memoPh:'e.g. great food, book ahead', photos:'Photos', addPhoto:'＋ Add photo', photoMax:`Up to ${MAX_PHOTOS} photos per day`, photoErr:'Storage is full. Remove a few photos and try again.', removePhoto:'Remove photo',
+    infographic:'🖼️ Infographic', infoTitle:'Travel plan', copyText:'📋 Copy as text', copied:'Copied', copyFail:'Could not copy. Select the text and copy it yourself.',
+    backup:'💾 Backup / restore', backupTitle:'Back up your data', backupDesc:'Copy this text and keep it, or paste it into Import on another device.', copy:'Copy',
+    importTitle:'Import data', importDesc:'Paste backup text and press Import. The current trip will be replaced.', importBtn:'Import', importBad:'That data is not valid', importOk:'Imported',
+    day1Edit:'Tap this day to edit', noPlace:'No place yet', noItems:'No missions yet', emptyDayCoin:'No missions yet',
+    importBtnBack:'Back', titleInfo:'Travel plan', totalDays:n=>`${n} day${n===1?'':'s'}`,
+  }
+};
+
+/* ================= state ================= */
+let lang = (() => { try { return localStorage.getItem(LKEY); } catch(e){ return null; } })()
+        || ((navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'th');
+/* cleanup: remove the Guangzhou-Shenzhen sample trip and converter data from this browser */
+try {
+  localStorage.removeItem('travelquest.rate'); localStorage.removeItem('travelquest.calcOpen');
+  const raw = localStorage.getItem(KEY);
+  if (raw && /กว่างโจว-เซินเจิ้น/.test(raw)) localStorage.removeItem(KEY);
+} catch (e) {}
+let S = load();
+let introMode = 'intro'; // language + short guide shown on every open
+let introStep = 0; // 0 = language choice, 1..4 = tour slides
+let openSid = null;
+const editor = { sid: null, cat: 'travel' };
+const view = document.getElementById('view');
+const modal = document.getElementById('modal');
+const toastEl = document.getElementById('toast');
+const L = () => T[lang];
+
+function load(){ try { const s = JSON.parse(localStorage.getItem(KEY)); return s && s.stages ? s : null; } catch(e){ return null; } }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); return true; } catch(e){ return false; } }
+const uid = () => Math.random().toString(36).slice(2, 9);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isoOf = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parseD = iso => { const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d); };
+const fmt = iso => parseD(iso).toLocaleDateString(lang === 'th' ? 'th-TH' : 'en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+const isDone = st => st.items.length > 0 && st.items.every(x => x.done);
+const findStage = sid => S.stages.find(s => s.id === sid);
+const itemText = it => it.key ? ITEM[it.key][lang] : it.text;
+const catIcon = it => svgOf((CAT[it.cat] || CAT.other).id);
+const allCoins = () => S.stages.every(isDone);
+const firstOpen = () => S.stages.findIndex(s => !isDone(s));
+
+function notice(msg){
+  toastEl.textContent = msg; toastEl.classList.add('show');
+  clearTimeout(notice.t); notice.t = setTimeout(() => toastEl.classList.remove('show'), 2200);
+}
+
+function daysBetween(start, end){
+  const out = [], d = parseD(start), e = parseD(end);
+  while (d <= e && out.length < 61){ out.push(isoOf(d)); d.setDate(d.getDate() + 1); }
+  return out;
+}
+
+function makeStages(start, end){
+  const days = daysBetween(start, end);
+  const base = (kind, date, items) => ({ id: uid(), kind, date, items, place: '', memo: '', photos: [] });
+  const stages = [base('pack', null, PACK_KEYS.map(k => ({ id: uid(), key: k, cat: 'pack', done: false })))];
+  days.forEach((iso, i) => stages.push(base(i === days.length - 1 ? 'home' : 'day', iso, [])));
+  return stages;
+}
+
+function stageIcon(st, i){ return st.kind === 'pack' ? '🎒' : st.kind === 'home' ? '🏁' : i === 1 ? '🛫' : '📍'; }
+function stageTitle(st, i){
+  const t = L();
+  if (st.kind === 'pack') return t.pack;
+  if (st.kind === 'home') return `${t.day(i)} · ${t.home}`;
+  return i === 1 ? `${t.day(1)} · ${t.depart}` : t.day(i);
+}
+const stageMeta = st => st.date ? fmt(st.date) : L().before;
+
+/* ================= 2D art ================= */
+const ART_COIN = `<rect width="240" height="140" fill="#fff7de"/><circle cx="120" cy="70" r="52" fill="#f5b82e"/><circle cx="120" cy="70" r="42" fill="#ffe08a"/><path d="M120,44 L128,62 L147,63 L132,74 L137,93 L120,82 L103,93 L108,74 L93,63 L112,62 Z" fill="#f5b82e"/>`;
+const ART_PACK = `<rect width="240" height="140" fill="#dff4f0"/><circle cx="200" cy="34" r="16" fill="#f5b82e"/><rect x="70" y="46" width="100" height="70" rx="12" fill="#ff7a59"/><path d="M100,46 V34 Q100,22 112,22 H128 Q140,22 140,34 V46" fill="none" stroke="#c85a3f" stroke-width="8"/><rect x="70" y="72" width="100" height="8" fill="#c85a3f" opacity=".5"/><circle cx="170" cy="96" r="18" fill="#2fb36b"/><path d="M161,96 l6,6 l12,-12" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+const ART_HOME = `<rect width="240" height="140" fill="#fff3d6"/><circle cx="48" cy="34" r="14" fill="#fff"/><rect x="84" y="70" width="72" height="50" fill="#ff7a59"/><path d="M76,72 L120,38 L164,72 Z" fill="#c85a3f"/><rect x="110" y="94" width="20" height="26" fill="#6b4a2f"/><rect x="92" y="80" width="12" height="12" fill="#fff6d6"/><rect x="136" y="80" width="12" height="12" fill="#fff6d6"/><path d="M190,26 L194,36 L205,36 L196,42 L199,53 L190,46 L181,53 L184,42 L175,36 L186,36 Z" fill="#f5b82e"/>`;
+const ART_DAY = [
+  `<rect width="240" height="140" fill="#cfe9ff"/><circle cx="184" cy="38" r="18" fill="#fff6d6"/><path d="M0,120 L70,40 L130,120 Z" fill="#2a9d8f"/><path d="M70,40 L88,64 L76,60 L66,68 L56,58 Z" fill="#fff"/><path d="M90,120 L165,28 L240,120 Z" fill="#6d5ce6"/><path d="M165,28 L184,56 L172,52 L162,60 L152,50 Z" fill="#fff"/><rect y="118" width="240" height="22" fill="#8fd1bd"/>`,
+  `<rect width="240" height="140" fill="#ffe9c2"/><circle cx="120" cy="58" r="30" fill="#ff9f6b"/><rect y="70" width="240" height="70" fill="#4c9be8"/><path d="M0,80 Q20,70 40,80 T80,80 T120,80 T160,80 T200,80 T240,80" fill="none" stroke="#fff" stroke-width="3" opacity=".8"/><path d="M0,102 Q20,92 40,102 T80,102 T120,102 T160,102 T200,102 T240,102" fill="none" stroke="#fff" stroke-width="3" opacity=".6"/>`,
+  `<rect width="240" height="140" fill="#f6f1ff"/><circle cx="60" cy="36" r="14" fill="#fff6d6"/><rect x="70" y="100" width="100" height="22" fill="#c8b6f5"/><rect x="84" y="78" width="72" height="22" fill="#f5b82e"/><path d="M76,80 L120,62 L164,80 Z" fill="#e5a50a"/><rect x="96" y="56" width="48" height="22" fill="#f5b82e"/><path d="M88,58 L120,42 L152,58 Z" fill="#e5a50a"/><rect x="110" y="36" width="20" height="20" fill="#f5b82e"/><path d="M104,38 L120,24 L136,38 Z" fill="#e5a50a"/>`,
+  `<rect width="240" height="140" fill="#ffe0d6"/><rect x="50" y="60" width="140" height="62" fill="#fff"/><path d="M40,60 H200 L190,38 H50 Z" fill="#ff7a59"/><rect x="60" y="38" width="20" height="22" fill="#fff" opacity=".7"/><rect x="100" y="38" width="20" height="22" fill="#fff" opacity=".7"/><rect x="140" y="38" width="20" height="22" fill="#fff" opacity=".7"/><circle cx="80" cy="100" r="10" fill="#2fb36b"/><circle cx="110" cy="104" r="11" fill="#ff7a59"/><circle cx="142" cy="100" r="10" fill="#f5b82e"/><circle cx="170" cy="104" r="11" fill="#e5577e"/>`,
+  `<rect width="240" height="140" fill="#2b3a67"/><circle cx="196" cy="30" r="12" fill="#fff6d6"/><rect x="20" y="60" width="36" height="80" fill="#4c9be8"/><rect x="62" y="40" width="30" height="100" fill="#6d5ce6"/><rect x="98" y="72" width="40" height="68" fill="#2a9d8f"/><rect x="144" y="50" width="34" height="90" fill="#e5577e"/><rect x="184" y="78" width="40" height="62" fill="#f5b82e"/><g fill="#fff6d6" opacity=".85"><rect x="28" y="72" width="8" height="8"/><rect x="28" y="90" width="8" height="8"/><rect x="70" y="54" width="8" height="8"/><rect x="70" y="72" width="8" height="8"/><rect x="106" y="84" width="8" height="8"/><rect x="106" y="102" width="8" height="8"/><rect x="152" y="64" width="8" height="8"/><rect x="152" y="84" width="8" height="8"/><rect x="192" y="92" width="8" height="8"/><rect x="192" y="110" width="8" height="8"/></g>`
+];
+/* Themed day scenes: picked by the day's most common category, else rotated */
+const ART_CAT = {
+  temple: `<rect width="240" height="140" fill="#fde7cf"/><circle cx="196" cy="36" r="16" fill="#f5b82e"/><rect y="112" width="240" height="28" fill="#8fd1bd"/><rect x="62" y="96" width="116" height="18" fill="#c85a3f"/><rect x="80" y="70" width="80" height="28" fill="#ff7a59"/><path d="M68,70 L120,48 L172,70 Z" fill="#f5b82e"/><path d="M86,50 L120,34 L154,50 Z" fill="#e5a50a"/><rect x="112" y="30" width="16" height="8" fill="#f5b82e"/><rect x="92" y="80" width="6" height="18" fill="#fff6d6"/><rect x="142" y="80" width="6" height="18" fill="#fff6d6"/>`,
+  nature: `<rect width="240" height="140" fill="#d7f5e4"/><circle cx="50" cy="34" r="14" fill="#fff6d6"/><path d="M0,120 L60,50 L110,120 Z" fill="#1f8a52"/><path d="M80,120 L150,30 L220,120 Z" fill="#2fb36b"/><path d="M150,30 L168,56 L156,52 L150,60 L142,52 L134,56 Z" fill="#fff"/><rect y="112" width="240" height="28" fill="#8fd1bd"/><rect x="190" y="88" width="8" height="24" fill="#6b4a2f"/><circle cx="194" cy="82" r="12" fill="#2fb36b"/>`,
+  sight: `<rect width="240" height="140" fill="#cfe9ff"/><circle cx="196" cy="30" r="12" fill="#fff6d6"/><path d="M120,18 L146,118 H94 Z" fill="#6d5ce6"/><rect x="104" y="60" width="32" height="6" fill="#fff"/><rect x="100" y="84" width="40" height="6" fill="#fff"/><rect x="118" y="6" width="3" height="14" fill="#2b3a67"/><path d="M121,6 L137,11 L121,16 Z" fill="#e5577e"/><rect y="118" width="240" height="22" fill="#8fd1bd"/>`,
+  eat: `<rect width="240" height="140" fill="#ffe6cc"/><path d="M60,70 H180 Q176,116 120,116 Q64,116 60,70 Z" fill="#fff"/><path d="M64,76 H176 Q172,110 120,110 Q68,110 64,76 Z" fill="#ff9f6b"/><path d="M96,58 Q90,46 98,36 M120,58 Q114,44 122,34 M144,58 Q138,46 146,36" fill="none" stroke="#c85a3f" stroke-width="4" stroke-linecap="round"/><rect x="30" y="112" width="60" height="5" fill="#6b4a2f"/>`,
+  shop: `<rect width="240" height="140" fill="#fbe3f0"/><path d="M84,50 Q120,14 156,50" fill="none" stroke="#c85a3f" stroke-width="6"/><rect x="66" y="50" width="108" height="72" rx="8" fill="#e5577e"/><rect x="66" y="50" width="108" height="10" fill="#c23f63"/><circle cx="120" cy="90" r="11" fill="#fff6d6"/><path d="M180,48 L200,40 L212,64 L192,72 Z" fill="#f5b82e"/><circle cx="196" cy="56" r="3" fill="#fff"/>`,
+  rest: `<rect width="240" height="140" fill="#e6e0ff"/><circle cx="196" cy="34" r="14" fill="#fff6d6"/><circle cx="186" cy="28" r="12" fill="#e6e0ff"/><rect x="40" y="82" width="160" height="34" rx="4" fill="#6d5ce6"/><rect x="40" y="70" width="8" height="46" fill="#4b3cb0"/><rect x="50" y="72" width="36" height="18" rx="8" fill="#fff"/><rect y="116" width="240" height="24" fill="#c8b6f5"/>`,
+  travel: `<rect width="240" height="140" fill="#dff4f0"/><circle cx="48" cy="34" r="14" fill="#fff6d6"/><rect x="36" y="64" width="168" height="48" rx="14" fill="#4c9be8"/><rect x="60" y="74" width="26" height="18" rx="4" fill="#fff"/><rect x="96" y="74" width="26" height="18" rx="4" fill="#fff"/><rect x="132" y="74" width="26" height="18" rx="4" fill="#fff"/><path d="M180,64 V54 H196 V64" fill="#2b3a67"/><circle cx="68" cy="116" r="11" fill="#2b3a67"/><circle cx="172" cy="116" r="11" fill="#2b3a67"/><rect y="124" width="240" height="16" fill="#8fd1bd"/>`,
+  other: `<rect width="240" height="140" fill="#fff3d6"/><path d="M120,24 L130,56 L162,56 L136,74 L146,106 L120,88 L94,106 L104,74 L78,56 L110,56 Z" fill="#f5b82e"/><path d="M190,20 L193,28 L201,28 L195,33 L197,41 L190,36 L183,41 L185,33 L179,28 L187,28 Z" fill="#ff7a59"/><circle cx="50" cy="110" r="6" fill="#2fb36b"/><circle cx="210" cy="108" r="8" fill="#e5577e"/>`,
+};
+function dayArt(st, i){
+  const n = {};
+  (st.items || []).forEach(it => { if (it.cat && ART_CAT[it.cat]) n[it.cat] = (n[it.cat] || 0) + 1; });
+  const top = Object.keys(n).sort((a, b) => n[b] - n[a])[0];
+  return top ? ART_CAT[top] : ART_DAY[(i - 1) % ART_DAY.length];
+}
+function stageArt(st, i){
+  const body = st.kind === 'pack' ? ART_PACK : st.kind === 'home' ? ART_HOME : dayArt(st, i);
+  return `<svg class="art" viewBox="0 0 240 140" role="img" aria-label="${esc(L().art(stageTitle(st, i)))}">${body}</svg>`;
+}
+function coinSvg(){
+  return `<svg class="coin" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="#f5b82e"/><circle cx="60" cy="60" r="44" fill="#ffe08a"/><path d="M60,30 L68,50 L89,51 L73,64 L79,85 L60,73 L41,85 L47,64 L31,51 L52,50 Z" fill="#f5b82e"/></svg>`;
+}
+function cupSvg(){
+  return `<svg class="coin" viewBox="0 0 120 120" aria-hidden="true"><path d="M34,20 H86 V50 Q86,78 60,80 Q34,78 34,50 Z" fill="#f5b82e"/><path d="M34,28 H20 Q18,50 36,56" fill="none" stroke="#f5b82e" stroke-width="6"/><path d="M86,28 H100 Q102,50 84,56" fill="none" stroke="#f5b82e" stroke-width="6"/><rect x="54" y="80" width="12" height="16" fill="#e5a50a"/><rect x="38" y="96" width="44" height="10" rx="3" fill="#e5a50a"/></svg>`;
+}
+
+/* ================= rendering ================= */
+function render(){
+  document.documentElement.lang = lang;
+  document.getElementById('hsub').textContent = L().sub;
+  const lb = document.getElementById('langbtn');
+  lb.textContent = L().langBtn; lb.setAttribute('aria-label', L().langName);
+  const fb = document.getElementById('fxbtn'); fb.textContent = fxOn() ? (lang === 'th' ? '✨ เอฟเฟกต์ เปิด' : '✨ Effects on') : (lang === 'th' ? '🔕 เอฟเฟกต์ ปิด' : '🔕 Effects off');
+  if (introMode) return renderIntro();
+  if (!S) return renderSetup();
+  if (S.phase === 'plan') return renderPlan();
+  renderPlay();
+}
+
+function renderIntro(){
+  const I = INTRO[lang];
+  if (introStep === 0){
+    view.innerHTML = `
+    <div class="intro">
+      <div class="intro-art">${svgWrap(ART_PACK)}</div>
+      <h1 class="intro-title">🧳 Travel Quest</h1>
+      <p class="muted">เลือกภาษา · Choose your language</p>
+      <div class="langs">
+        <button class="langcard" data-act="pick-lang" data-lang="th"><span class="flag" aria-hidden="true">ไทย</span><b>ภาษาไทย</b></button>
+        <button class="langcard" data-act="pick-lang" data-lang="en"><span class="flag" aria-hidden="true">EN</span><b>English</b></button>
+      </div>
+    </div>`;
+    return;
+  }
+  const idx = introStep - 1, s = I.slides[idx], last = idx === I.slides.length - 1;
+  view.innerHTML = `
+  <div class="intro">
+    <div class="intro-art">${svgWrap(INTRO_ART[idx])}</div>
+    <div class="dots" aria-hidden="true">${I.slides.map((_, k) => `<i class="${k === idx ? 'on' : ''}"></i>`).join('')}</div>
+    <h2 style="font-size:22px">${s.t}</h2>
+    <p class="muted" style="font-size:16px">${s.d}</p>
+    <div class="row wrap intro-nav">
+      <button class="btn ghost" data-act="tour-prev" ${idx === 0 ? 'disabled' : ''}>${I.prev}</button>
+      <button class="btn" data-act="tour-next">${last ? I.start : I.next}</button>
+    </div>
+    <button class="linkbtn" data-act="tour-skip">${I.skip}</button>
+  </div>`;
+}
+
+function finishTour(){
+  try { localStorage.setItem('travelquest.intro', '1'); } catch(e){}
+  introMode = null; introStep = 0;
+  render(); window.scrollTo?.(0, 0);
+}
+
+function renderSetup(){
+  const t = L();
+  view.innerHTML = `
+  <div class="narrow">
+    <div class="card">
+      <div class="hero-art">${svgWrap(ART_PACK)}</div>
+      <h2>${t.newTrip}</h2>
+      <p class="muted">${t.newTripDesc}</p>
+      <form id="setup" novalidate>
+        <label for="f-name">${t.tripName}</label>
+        <input id="f-name" name="name" autocomplete="off" placeholder="${esc(t.tripPh)}">
+        <div class="dates">
+          <div><label for="f-start">${t.start}</label><input id="f-start" type="date" name="start"></div>
+          <div><label for="f-end">${t.end}</label><input id="f-end" type="date" name="end"></div>
+        </div>
+        <p class="err" id="err" role="alert"></p>
+        <button class="btn wide">${t.next}</button>
+      </form>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost small grow" data-act="import">${t.importBtn}</button>
+        <button class="btn ghost small grow" data-act="tour">${INTRO[lang].howto}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* per-day budget and spending */
+const spendOf = st => st.spend || [];
+const spentOf = st => spendOf(st).reduce((n, x) => n + (x.amt || 0), 0);
+function budgetBlock(st){
+  const th = lang === 'th';
+  const spent = spentOf(st), budget = Number(st.budget) || 0;
+  const over = budget > 0 && spent > budget;
+  const rows = spendOf(st).map(x => `<li><span class="grow">${esc(x.note || (th ? 'รายการ' : 'Item'))}</span><b>${x.amt.toLocaleString()} ฿</b><button class="linkbtn" data-act="spend-del" data-sid="${st.id}" data-eid="${x.id}" aria-label="${th ? 'ลบ' : 'Delete'}">✕</button></li>`).join('');
+  return `
+  <div class="field budget ${over ? 'over' : ''}">
+    <div class="lbl" style="margin-top:0">💰 ${th ? 'งบวันนี้ (฿)' : 'Budget today (฿)'}</div>
+    <input type="number" inputmode="decimal" min="0" data-field="budget" data-sid="${st.id}" value="${budget || ''}" placeholder="0">
+    <div class="spent-line">${th ? 'ใช้ไป' : 'Spent'} <b>${spent.toLocaleString()} ฿</b>${budget ? ` · ${over ? (th ? 'เกินงบ ' : 'Over by ') + (spent - budget).toLocaleString() + ' ฿' : (th ? 'เหลือ ' : 'Left ') + (budget - spent).toLocaleString() + ' ฿'}` : ''}</div>
+    ${rows ? `<ul class="spend">${rows}</ul>` : ''}
+    <div class="row wrap spend-add">
+      <input id="sa-${st.id}" type="number" inputmode="decimal" min="0" placeholder="${th ? 'จำนวน ฿' : 'Amount ฿'}">
+      <input id="sn-${st.id}" maxlength="60" placeholder="${th ? 'รายการ เช่น ผลไม้' : 'Item e.g. fruit'}">
+      <button class="btn small" data-act="spend-add" data-sid="${st.id}">+ ${th ? 'บันทึก' : 'Add'}</button>
+    </div>
+  </div>`;
+}
+
+function tripCard(extra = ''){
+  const t = L();
+  return `
+  <div class="card">
+    <div class="row">
+      <div class="grow">
+        <h3>${esc(S.trip.name)}</h3>
+        <div class="muted">${fmt(S.trip.start)} – ${fmt(S.trip.end)} · ${t.totalDays(S.stages.length - 1)}</div>
+      </div>
+      ${extra}
+      <button class="btn ghost small" data-act="reset">${t.reset}</button>
+    </div>
+  </div>
+  <div class="toolbar">
+    <button class="btn ghost small" data-act="info">${t.infographic}</button>
+    <button class="btn ghost small" data-act="backup">${t.backup}</button>
+  </div>`;
+}
+
+function guideCard(open){
+  const t = L();
+  return `
+  <details class="card guide" ${open ? 'open' : ''}>
+    <summary>${t.guideTitle}</summary>
+    <ol class="steps">${t.guide.map(g => `<li>${g}</li>`).join('')}</ol>
+    <div class="legend" aria-hidden="true">${CATS.map(c => `<span>${svgOf(c.id)} ${c[lang]}</span>`).join('')}</div>
+  </details>`;
+}
+
+function renderPlan(){
+  const t = L();
+  const cards = S.stages.map((st, i) => {
+    const n = st.items.length;
+    const icons = st.items.slice(0, 8).map(catIcon).join('');
+    return `
+    <button class="daycard ${n ? '' : 'empty'}" data-act="edit" data-sid="${st.id}">
+      <span class="badge" aria-hidden="true">${stageIcon(st, i)}</span>
+      <span class="grow">
+        <b style="display:block">${esc(stageTitle(st, i))}</b>
+        <span class="muted" style="display:block">${stageMeta(st)}</span>
+        <span class="chips" aria-hidden="true">${n ? icons : ''}</span>
+        <span class="editlbl">${n ? t.tapEdit : t.noMission}</span>
+      </span>
+      <span class="count">${n}</span>
+    </button>`;
+  }).join('');
+
+  view.innerHTML = `
+  ${tripCard()}
+  ${guideCard(!S.guideSeen)}
+  <div class="card">
+    <h3>${lang === 'th' ? '🧭 เลือกเทมเพลตทริป' : '🧭 Trip templates'}</h3>
+    <p class="muted" style="margin:4px 0 10px">${lang === 'th' ? 'เพิ่มภารกิจตัวอย่างให้ทุกวันในครั้งเดียว' : 'Add example missions to every day at once'}</p>
+    <div class="tpl-row">${Object.keys(TPL).map(k => `<button class="btn" data-act="tpl" data-tpl="${k}">${TPL[k][lang]}</button>`).join('')}</div>
+  </div>
+  <div class="card" style="padding-bottom:10px">
+    <h2>${t.planTitle}</h2>
+    <p class="muted" style="margin:0">${t.planDesc}</p>
+  </div>
+  <div class="daygrid">${cards}</div>
+  <div class="startbar"><div class="in">
+    <p class="err" id="starterr" role="alert"></p>
+    <button class="btn ghost small hidden" id="fillbtn" data-act="fill">${t.fill}</button>
+    <button class="btn start-big" data-act="start">${t.startGame}</button>
+  </div></div>`;
+  view.querySelector('details.guide').addEventListener('toggle', () => { S.guideSeen = true; save(); }, { once: true });
+}
+
+function renderPlay(){
+  const t = L();
+  const total = S.stages.length;
+  const doneN = S.stages.filter(isDone).length;
+  const pct = Math.round(doneN / total * 100);
+  const champ = doneN === total;
+
+  const stages = S.stages.map((st, i) => {
+    const done = isDone(st);
+    const open = openSid === st.id;
+    const thumbs = st.photos.length ? `<div class="thumbs" aria-hidden="true">${st.photos.slice(0, 5).map(src => `<img src="${src}" alt="">`).join('')}</div>` : '';
+    const placeLine = st.place ? `<span class="muted" style="display:block">📍 ${esc(st.place)}</span>` : '';
+    return `
+    <div class="card stage ${done ? '' : 'current'}" id="st-${st.id}">
+      <button class="stagebtn" aria-expanded="${open}" data-act="open" data-sid="${st.id}">
+        <span class="badge ${done ? 'ok' : 'cur'}" aria-hidden="true">${done ? '🪙' : stageIcon(st, i)}</span>
+        <span class="grow">
+          <b style="display:block">${esc(stageTitle(st, i))}</b>
+          <span class="muted" style="display:block">${stageMeta(st)} · ${t.nMissions(st.items.length)} · ${done ? t.earned : t.pending}</span>
+          ${placeLine}
+        </span>
+        <span class="muted" aria-hidden="true">${open ? '▲' : '▼'}</span>
+      </button>
+      ${!open && done ? stageArt(st, i) : ''}
+      ${!open ? thumbs : ''}
+      ${open ? stageBody(st, i) : ''}
+    </div>`;
+  }).join('');
+
+  view.innerHTML = `
+  <div class="play-grid">
+    <div class="play-side">
+      ${tripCard(`<button class="btn ghost small" data-act="plan">${t.editPlan}</button>`)}
+          ${champ ? `<div class="card champion">${cupSvg()}<h3>${t.champion}</h3><div class="muted">${t.championDesc}</div></div>` : ''}
+      <div class="card">
+        <div class="row"><b class="grow">${t.coinsCount(doneN, total)}</b></div>
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="${esc(t.progress(pct))}">
+          <i class="${champ ? 'full' : ''}" style="width:${pct}%"></i>
+        </div>
+        <div class="muted">${champ ? t.finished : t.progress(pct)}</div>
+      </div>
+    </div>
+    <div>${stages}</div>
+  </div>`;
+
+}
+
+function stageBody(st, i){
+  const t = L();
+  const list = st.items.map(it => `
+    <div class="item">
+      <label>
+        <input type="checkbox" data-act="check" data-sid="${st.id}" data-iid="${it.id}" ${it.done ? 'checked' : ''}>
+        <span class="ci" aria-hidden="true">${catIcon(it)}</span>
+        <span class="${it.done ? 'done' : ''}">${esc(itemText(it))}</span>
+      </label>
+    </div>`).join('') || `<p class="muted">${t.noItems}</p>`;
+
+  const photos = st.photos.map((src, k) => `
+    <div class="ph"><img src="${src}" alt="${esc(stageTitle(st, i))} ${k + 1}">
+      <button class="x" data-act="rmphoto" data-sid="${st.id}" data-idx="${k}" aria-label="${esc(t.removePhoto)}">✕</button></div>`).join('');
+  const canAdd = st.photos.length < MAX_PHOTOS;
+
+  return `
+  <div class="items">
+    ${list}
+    <div class="row" style="margin-top:10px;flex-wrap:wrap">
+      <button class="btn ghost small" data-act="edit" data-sid="${st.id}">${t.editMissions}</button>
+    </div>
+    ${st.kind === 'pack' ? '' : budgetBlock(st)}
+    <div class="field">
+      <label for="pl-${st.id}">📍 ${t.place}</label>
+      <input id="pl-${st.id}" data-field="place" data-sid="${st.id}" maxlength="80" value="${esc(st.place)}" placeholder="${esc(t.placePh)}">
+    </div>
+    <div class="field">
+      <label for="me-${st.id}">📝 ${t.memo}</label>
+      <textarea id="me-${st.id}" data-field="memo" data-sid="${st.id}" maxlength="200" placeholder="${esc(t.memoPh)}">${esc(st.memo)}</textarea>
+    </div>
+    <div class="field">
+      <div class="lbl" style="margin-top:0">🖼️ ${t.photos}</div>
+      <div class="photos">
+        ${photos}
+        <label class="addphoto ${canAdd ? '' : 'disabled'}" aria-disabled="${!canAdd}">
+          ${canAdd ? `<input type="file" accept="image/*" multiple data-photo-sid="${st.id}">` : ''}
+          <span>${canAdd ? t.addPhoto : t.photoMax}</span>
+        </label>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ================= modal ================= */
+function openModal(html, opts = {}){
+  modal.className = 'modal' + (opts.center ? ' center' : '') + (opts.wide ? ' wide' : '');
+  modal.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dlg-title">${html}</div>`;
+  document.body.classList.add('noscroll');
+}
+function closeModal(){
+  modal.className = 'modal hidden';
+  modal.innerHTML = '';
+  document.body.classList.remove('noscroll');
+  editor.sid = null;
+  render();
+}
+
+function openEditor(sid){
+  const st = findStage(sid);
+  editor.sid = sid;
+  editor.cat = st.kind === 'pack' ? 'pack' : st.kind === 'home' ? 'travel' : (editor.cat === 'pack' ? 'travel' : editor.cat);
+  openModal('<div id="ed"></div>');
+  renderEditor();
+  document.getElementById('ed-input')?.focus({ preventScroll: true });
+}
+
+function renderEditor(){
+  const t = L();
+  const st = findStage(editor.sid);
+  if (!st) return closeModal();
+  const i = S.stages.indexOf(st);
+  const cat = CAT[editor.cat] || CAT.travel;
+  const sugs = cat.sug[lang].filter(s => !st.items.some(it => itemText(it) === s));
+  const typed = document.getElementById('ed-input')?.value || '';
+  const items = st.items.length ? st.items.map(it => `
+    <div class="item">
+      <span class="ci" aria-hidden="true">${catIcon(it)}</span>
+      <span class="t ${it.done ? 'done' : ''}">${esc(itemText(it))}</span>
+      <button class="x" data-act="del" data-sid="${st.id}" data-iid="${it.id}" aria-label="${esc(t.del)}: ${esc(itemText(it))}">✕</button>
+    </div>`).join('') : `<p class="muted">${t.noMission}</p>`;
+
+  document.getElementById('ed').innerHTML = `
+    <div class="sheet-head">
+      <span class="badge" aria-hidden="true">${stageIcon(st, i)}</span>
+      <div class="grow"><h2 id="dlg-title" style="margin:0">${esc(stageTitle(st, i))}</h2><div class="muted">${stageMeta(st)}</div></div>
+      <button class="iconbtn" data-act="close" aria-label="${t.close}">✕</button>
+    </div>
+    <div class="lbl">${t.quick}</div>
+    <div class="cats" role="group" aria-label="${t.quick}">
+      ${CATS.map(c => `<button class="cat ${c.id === cat.id ? 'on' : ''}" aria-pressed="${c.id === cat.id}" data-act="cat" data-cat="${c.id}"><span class="ci" aria-hidden="true">${svgOf(c.id)}</span>${c[lang]}</button>`).join('')}
+    </div>
+    ${sugs.length ? `<div class="lbl">${t.suggestions}</div><div class="sugs">${sugs.map(s => `<button class="sug" data-act="sug" data-text="${esc(s)}">＋ ${esc(s)}</button>`).join('')}</div>` : ''}
+    <div class="row" style="margin-top:14px">
+      <span class="ci" aria-hidden="true">${svgOf(cat.id)}</span>
+      <input id="ed-input" aria-label="${esc(t.addPh)}" placeholder="${esc(t.addPh)}" value="${esc(typed)}" autocomplete="off">
+      <button class="btn small" data-act="add-item">${t.add}</button>
+    </div>
+    <div class="lbl">${t.missions} (${st.items.length})</div>
+    <div class="elist">${items}</div>
+    <button class="btn wide" data-act="close">${t.done}</button>`;
+}
+
+function addItem(text){
+  text = String(text || '').trim();
+  if (!text) { document.getElementById('ed-input')?.focus(); return; }
+  findStage(editor.sid).items.push({ id: uid(), text, cat: editor.cat, done: false });
+  save();
+  const inp = document.getElementById('ed-input'); if (inp) inp.value = '';
+  renderEditor(); render();
+  document.getElementById('ed-input')?.focus({ preventScroll: true });
+}
+
+function askReset(){
+  const t = L();
+  openModal(`
+    <h2 id="dlg-title">${t.resetQ}</h2>
+    <p class="muted">${t.resetD}</p>
+    <div class="row" style="margin-top:16px">
+      <button class="btn ghost grow" data-act="close">${t.cancel}</button>
+      <button class="btn danger grow" data-act="reset-yes">${t.confirmReset}</button>
+    </div>`, { center: true });
+  modal.querySelector('[data-act="close"]').focus();
+}
+
+function plainText(){
+  const t = L();
+  const lines = [`${S.trip.name} (${fmt(S.trip.start)} – ${fmt(S.trip.end)})`, ''];
+  S.stages.forEach((st, i) => {
+    lines.push(`${stageIcon(st, i)} ${stageTitle(st, i)} — ${stageMeta(st)}${isDone(st) ? ' 🪙' : ''}`);
+    if (st.place) lines.push(`   📍 ${st.place}`);
+    st.items.forEach(it => lines.push(`   ${it.done ? '☑' : '☐'} ${itemText(it)}`));
+    if (st.memo) lines.push(`   📝 ${st.memo}`);
+  });
+  return lines.join('\n');
+}
+
+const IG = {
+  th:{ png:'🖼️ บันทึกเป็นรูป A4', dl:'⬇️ ดาวน์โหลด A4', infoBtn:'📊 ดูอินโฟกราฟิก', tag:'✈ แผนเที่ยวของฉัน', days:'วัน', missions:'ภารกิจ', coins:'เหรียญ', xp:'ความคืบหน้าทริป', prep:'เตรียม', day:n=>`วันที่ ${n}`, finale:'เส้นชัย', endT:'ถ้วยแชมป์รออยู่!', endD:'เก็บเหรียญให้ครบทุกวันเพื่อรับถ้วย', winT:'แชมป์ทริป!', winD:'สะสมเหรียญครบทุกวันแล้ว' },
+  en:{ png:'🖼️ Save image (A4)', dl:'⬇️ Download A4', infoBtn:'📊 View infographic', tag:'✈ MY TRIP PLANNER', days:'days', missions:'missions', coins:'coins', xp:'Trip progress', prep:'PREP', day:n=>`DAY ${n}`, finale:'FINISH', endT:'The trophy awaits!', endD:'Collect a coin every day to win it', winT:'Trip champion!', winD:'Every coin collected' },
+};
+const IG_PAL = [
+  { bg:'#ffe4ec', ac:'#c2185b' }, { bg:'#dff4f0', ac:'#1f7a70' }, { bg:'#ece7ff', ac:'#5b4bd1' },
+  { bg:'#fff1d6', ac:'#a85300' }, { bg:'#dcefff', ac:'#1d6fb8' },
+];
+const IG_SKY = `<svg class="sky" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <circle cx="345" cy="46" r="26" fill="#ffd45e" opacity=".9"/>
+  <g fill="#fff" opacity=".25"><ellipse cx="70" cy="40" rx="34" ry="12"/><ellipse cx="92" cy="32" rx="22" ry="12"/><ellipse cx="300" cy="150" rx="40" ry="13"/><ellipse cx="324" cy="141" rx="24" ry="12"/></g>
+  <path d="M-10,200 C80,150 160,210 250,140 S360,90 420,70" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round" opacity=".7"/>
+  <g transform="translate(372,78) rotate(-28)" fill="#fff"><path d="M-14,0 L14,-3 L18,0 L14,3 Z"/><path d="M0,-1 L-6,-12 L-2,-12 L8,-1 Z"/><path d="M0,1 L-6,12 L-2,12 L8,1 Z"/></g>
+  <g fill="#fff" opacity=".6"><circle cx="30" cy="120" r="2"/><circle cx="210" cy="30" r="2.5"/><circle cx="250" cy="70" r="1.6"/><circle cx="140" cy="90" r="1.6"/></g>
+</svg>`;
+const igCoin = () => `<svg viewBox="0 0 46 46" aria-hidden="true"><circle cx="23" cy="23" r="23" fill="#f5b82e"/><circle cx="23" cy="23" r="17" fill="#ffe08a"/><path d="M23,11 L26,19 L34.5,19.4 L28,24.6 L30.3,32.8 L23,28 L15.7,32.8 L18,24.6 L11.5,19.4 L20,19 Z" fill="#f5b82e"/></svg>`;
+
+function openInfo(){
+  const t = L(), g = IG[lang];
+  const total = S.stages.length, doneN = S.stages.filter(isDone).length;
+  const items = S.stages.flatMap(st => st.items);
+  const doneItems = items.filter(it => it.done).length;
+  const pct = items.length ? Math.round(doneItems / items.length * 100) : 0;
+  const champ = total > 0 && doneN === total;
+  const dayCount = S.stages.filter(st => st.kind !== 'pack').length;
+
+  const tally = {};
+  items.forEach(it => { if (it.cat !== 'pack') tally[it.cat] = (tally[it.cat] || 0) + 1; });
+  const loot = CATS.filter(c => tally[c.id]).map(c => `<span>${svgOf(c.id)} ${esc(c[lang])} ×${tally[c.id]}</span>`).join('');
+
+  const stops = S.stages.map((st, i) => {
+    const pal = IG_PAL[i % IG_PAL.length], ok = isDone(st);
+    const chip = st.kind === 'pack' ? g.prep : st.kind === 'home' ? `${g.day(i)} · ${g.finale}` : g.day(i);
+    const node = ok ? igCoin() : st.kind === 'pack' ? svgOf('pack') : st.kind === 'home' ? '🏁' : i;
+    const list = st.items.map(it => `<li>${catIcon(it)}<span class="t ${it.done ? 'done' : ''}">${esc(itemText(it))}</span><span class="ck ${it.done ? 'on' : ''}" aria-label="${it.done ? '✓' : ''}">${it.done ? '✓' : ''}</span></li>`).join('');
+    return `
+    <div class="ig-stop" style="--bg:${pal.bg};--ac:${pal.ac}">
+      <div class="ig-node" aria-hidden="true">${node}</div>
+      <div class="ig-card">
+        <div class="ig-top">
+          <div class="ig-head">
+            <div class="ig-chiprow"><span class="ig-chip">${chip}</span>${ok ? '<span class="ig-complete">COMPLETE ✓</span>' : ''}</div>
+            ${st.kind === 'day' && i !== 1 ? '' : `<h3>${esc(stageTitle(st, i))}</h3>`}
+            <div class="ig-date">${stageMeta(st)}${ok ? ' · 🪙' : ''}</div>
+          </div>
+          <div class="ig-thumb">${stageArt(st, i)}</div>
+        </div>
+        ${st.place ? `<div class="ig-place">📍 ${esc(st.place)}</div>` : ''}
+        ${list ? `<ul class="ig-list">${list}</ul>` : `<div class="ig-empty">${t.noItems}</div>`}
+        ${st.memo || st.photos[0] ? `<div class="ig-extra">
+          ${st.memo ? `<div class="ig-note">${esc(st.memo)}</div>` : ''}
+          ${st.photos[0] ? `<div class="ig-pol"><img src="${st.photos[0]}" alt=""></div>` : ''}
+        </div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  openModal(`
+  <div class="ig">
+    <div class="ig-hero">
+      ${IG_SKY}
+      <span class="ig-tag">${g.tag}</span>
+      <h2 class="ig-title" id="dlg-title">${esc(S.trip.name)}</h2>
+      <div class="ig-dates">${fmt(S.trip.start)} – ${fmt(S.trip.end)}</div>
+      <div class="ig-stats">
+        <div class="ig-stat"><b>${dayCount}</b><span>${g.days}</span></div>
+        <div class="ig-stat"><b>${items.length}</b><span>${g.missions}</span></div>
+        <div class="ig-stat"><b>${doneN}/${total}</b><span>${g.coins}</span></div>
+      </div>
+      <div class="ig-xp" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="${g.xp}"><i style="width:${pct}%"></i></div>
+      <div class="ig-xpl"><span>${g.xp}</span><span>${pct}%</span></div>
+    </div>
+    ${loot ? `<div class="ig-loot">${loot}</div>` : ''}
+    <div class="ig-path">${stops}</div>
+    <div class="ig-end">
+      ${cupSvg()}
+      <h3>${champ ? g.winT : g.endT}</h3>
+      <div class="muted">${champ ? g.winD : g.endD}</div>
+      <div class="ig-coins" aria-hidden="true">${S.stages.map(st => `<i class="${isDone(st) ? 'on' : ''}"></i>`).join('')}</div>
+    </div>
+    <div class="row wrap ig-actions">
+      <button class="btn ghost small grow" data-act="copy-text">${t.copyText}</button>
+      <button class="btn ghost small grow" data-act="png-info">${g.png}</button>
+      <button class="btn ghost small grow" data-act="dl-info">${g.dl}</button>
+      <button class="btn small grow" data-act="close">${t.close}</button>
+    </div>
+  </div>`, { wide: true });
+  modal.classList.add('ig');
+}
+
+async function saveFile(filename, data){
+  let dl = null;
+  try { dl = window.claude ? await window.claude.use('downloads') : null; } catch (e) { dl = null; }
+  if (!dl){ notice(lang === 'th' ? 'ดาวน์โหลดไม่ได้ในหน้านี้ ให้ใช้ปุ่มคัดลอกเป็นข้อความแทน' : 'Download is not available here. Use Copy as text instead.'); return false; }
+  try { await dl.save({ filename, data }); notice(lang === 'th' ? 'บันทึกไฟล์แล้ว' : 'File saved'); return true; }
+  catch (e) {
+    notice(e && e.code === 'declined'
+      ? (lang === 'th' ? 'ยกเลิกการบันทึกไฟล์' : 'Save cancelled')
+      : (lang === 'th' ? 'บันทึกไฟล์ไม่ได้ในหน้านี้' : 'Could not save the file here'));
+    return false;
+  }
+}
+const safeName = () => (S.trip.name || 'trip').replace(/[^\w฀-๿-]+/g, '_');
+
+async function downloadInfo(){
+  const ig = modal.querySelector('.ig');
+  if (!ig) return;
+  const css = Array.from(document.querySelectorAll('style')).map(x => x.textContent).join('\n');
+  const page = `<!DOCTYPE html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(S.trip.name)}</title><style>${css}
+@page{size:A4;margin:10mm}
+body{background:#fff;margin:0;padding:16px;font-family:'Sarabun',system-ui,sans-serif}
+.ig{max-width:190mm;margin:0 auto;border-radius:18px;overflow:hidden}
+.ig-actions{display:none!important}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+</style></head><body><div class="ig">${ig.innerHTML.replace(/<div class="row wrap ig-actions">[\s\S]*$/, '')}</div></body></html>`;
+  await saveFile(`travel-quest-${safeName()}-A4.html`, page);
+}
+
+const A4 = { w: 794, h: 1123, m: 40, px: 2480, py: 3508 }; // A4 at 96 CSS px/in; 2480x3508 px = A4 at 300 dpi
+A4.cw = A4.w - A4.m * 2;            // content width
+A4.usable = A4.h - A4.m * 2;        // content height per page
+
+async function saveInfoPng(){
+  const ig = modal.querySelector('.ig');
+  if (!ig) return;
+  const css = Array.from(document.querySelectorAll('style')).map(x => x.textContent).join('\n').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  // one clone per page, all at the A4 content width and the same font, so measured and rendered layouts match
+  const mk = () => {
+    const c = ig.cloneNode(true);
+    c.querySelector('.ig-actions')?.remove();
+    c.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    Object.assign(c.style, { width: A4.cw + 'px', maxWidth: 'none', margin: '0', borderRadius: '0', fontFamily: 'serif' });
+    return c;
+  };
+  const probe = document.createElement('div');
+  probe.style.cssText = `position:fixed;left:-99999px;top:0;width:${A4.cw}px;`;
+  document.body.appendChild(probe);
+  const measure = (c) => { probe.replaceChildren(c); return Math.ceil(c.getBoundingClientRect().height); };
+  const toImg = (c, h) => new Promise((res, rej) => {
+    const body = new XMLSerializer().serializeToString(c);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${A4.cw}" height="${h}" viewBox="0 0 ${A4.cw} ${h}"><foreignObject width="${A4.cw}" height="${h}"><style xmlns="http://www.w3.org/1999/xhtml">${css}</style>${body}</foreignObject></svg>`;
+    const img = new Image();
+    img.onload = () => res(img); img.onerror = rej;
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  });
+  const blocksOf = (c) => Array.from(c.querySelectorAll('.ig-hero, .ig-loot, .ig-stop, .ig-end'));
+  try {
+    const full = mk();
+    const H = measure(full);
+    const base = full.getBoundingClientRect().top;
+    const blocks = blocksOf(full).map(el => { const r = el.getBoundingClientRect(); return { top: r.top - base, bottom: r.bottom - base }; });
+
+    // one A4 page when it scales to >= 70% legibly; otherwise split between cards
+    const scale = H <= A4.usable ? 1 : A4.usable / H;
+    const single = scale >= 0.7;
+    const ranges = [];
+    if (single) ranges.push(null);
+    else {
+      let start = 0;
+      for (const bl of blocks){
+        if (bl.bottom - start > A4.usable && bl.top > start + 1){ ranges.push([start, bl.top]); start = bl.top; }
+      }
+      ranges.push([start, H]);
+    }
+
+    const K = A4.px / A4.w;
+    const files = [];
+    for (const range of ranges){
+      const canvas = document.createElement('canvas');
+      canvas.width = A4.px; canvas.height = A4.py;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (single){
+        const sc = scale < 1 ? scale : 1;
+        const img = await toImg(full, H);
+        ctx.drawImage(img, ((A4.w - A4.cw * sc) / 2) * K, A4.m * K, A4.cw * sc * K, H * sc * K);
+      } else {
+        const [s, e] = range;
+        const c = mk();
+        blocksOf(c).forEach((el, k) => { if (blocks[k].top >= e - 1 || blocks[k].bottom <= s + 1) el.remove(); });
+        const h = measure(c);
+        const img = await toImg(c, h);
+        ctx.save();
+        ctx.beginPath(); ctx.rect(0, A4.m * K, A4.px, A4.usable * K); ctx.clip();
+        ctx.drawImage(img, A4.m * K, A4.m * K, A4.cw * K, h * K);
+        ctx.restore();
+      }
+      files.push(await new Promise((res, rej) => canvas.toBlob(bl => bl ? res(bl) : rej(new Error('png')), 'image/png')));
+    }
+    const base2 = `travel-quest-${safeName()}-A4`;
+    for (let p = 0; p < files.length; p++){
+      const name = files.length === 1 ? `${base2}.png` : `${base2}-${p + 1}of${files.length}.png`;
+      if (!(await saveFile(name, files[p]))) break;
+    }
+  } catch (e) {
+    notice(lang === 'th' ? 'สร้างรูปไม่ได้ในหน้านี้' : 'Could not create the image here');
+  } finally {
+    probe.remove();
+  }
+}
+
+function openBackup(){
+  const t = L();
+  const data = JSON.stringify({ app: 'travel-quest', v: 3, ...S });
+  openModal(`
+    <h2 id="dlg-title">${t.backupTitle}</h2>
+    <p class="muted">${t.backupDesc}</p>
+    <textarea id="bk" readonly style="min-height:160px;font-size:13px">${esc(data)}</textarea>
+    <div class="row wrap" style="margin-top:12px">
+      <button class="btn grow" data-act="copy-backup">${t.copy}</button>
+      <button class="btn ghost grow" data-act="import">${t.importBtn}</button>
+      <button class="btn ghost grow" data-act="close">${t.close}</button>
+    </div>`, { center: true });
+  const ta = document.getElementById('bk');
+  ta.addEventListener('focus', () => ta.select());
+}
+
+function openImport(){
+  const t = L();
+  openModal(`
+    <h2 id="dlg-title">${t.importTitle}</h2>
+    <p class="muted">${t.importDesc}</p>
+    <textarea id="im" style="min-height:160px;font-size:13px" aria-label="${t.importTitle}"></textarea>
+    <p class="err" id="imerr" role="alert"></p>
+    <div class="row wrap" style="margin-top:12px">
+      <button class="btn grow" data-act="import-go">${t.importBtn}</button>
+      <button class="btn ghost grow" data-act="close">${t.close}</button>
+    </div>`, { center: true });
+  document.getElementById('im').focus();
+}
+
+function importGo(){
+  const t = L();
+  const raw = document.getElementById('im').value.trim();
+  const err = document.getElementById('imerr');
+  try {
+    const d = JSON.parse(raw);
+    if (!d || d.app !== 'travel-quest' || !Array.isArray(d.stages) || !d.trip) throw new Error('bad');
+    const { app, v, ...rest } = d;
+    S = rest;
+    S.stages.forEach(st => { st.place ||= ''; st.memo ||= ''; st.photos ||= []; });
+    openSid = null; save(); notice(t.importOk);
+    closeModal();
+    window.scrollTo?.(0, 0);
+  } catch (e) { err.textContent = t.importBad; }
+}
+
+function celebrate(st){
+  const t = L(), g = IG[lang];
+  const i = S.stages.indexOf(st);
+  const doneN = S.stages.filter(isDone).length;
+  const victory = doneN === S.stages.length;
+  const nextSt = S.stages[i + 1];
+  const title = victory ? g.winT : t.coinTitles[Math.floor(Math.random() * t.coinTitles.length)];
+  const nextBtn = !victory && nextSt
+    ? `<button class="btn" data-act="open-next" data-idx="${i + 1}">${lang === 'th' ? 'เปิดวันถัดไป' : 'Open next day'}</button>`
+    : '';
+  const infoBtn = victory ? `<button class="btn" data-act="info">${g.infoBtn}</button>` : '';
+  const lastBk = +(localStorage.getItem(BKEY) || 0);
+  const bkDue = Date.now() - lastBk > 3 * 864e5;
+  const bkNote = bkDue ? `<div class="bk-nudge">${lang === 'th' ? '💾 ยังไม่ได้สำรองข้อมูลเกิน 3 วัน แนะนำให้สำรองไว้' : '💾 No backup for 3+ days. Consider backing up.'} <button class="btn ghost small" data-act="backup">${lang === 'th' ? 'สำรองเลย' : 'Back up now'}</button></div>` : '';
+  openModal(`
+    <div class="pop${victory ? ' champ' : ''}">
+      <h2 id="dlg-title">${title}</h2>
+      ${victory ? cupSvg() : coinSvg()}
+      <div class="muted">${victory ? g.winD : esc(t.coinEarned(i))}</div>
+      <div class="stars" aria-hidden="true">${S.stages.map(s => isDone(s) ? '🪙' : '○').join('')}</div>
+      <div class="muted">${t.coinsCount(doneN, S.stages.length)}</div>
+      ${bkNote}
+      <div class="row wrap" style="margin-top:14px">
+        <button class="btn ghost grow" data-act="close">${lang === 'th' ? 'ปิด' : 'Close'}</button>
+        ${nextBtn}${infoBtn}
+      </div>
+    </div>`, { center: true });
+  modal.querySelector('[data-act="close"]').focus();
+  if (!REDUCE){
+    sfx(victory ? 'champ' : 'coin');
+    burst(victory ? 260 : 110);
+    if (victory){ setTimeout(() => burst(200), 350); setTimeout(() => burst(200), 800); }
+  }
+  try { fxOn() && navigator.vibrate && navigator.vibrate(victory ? [60, 60, 120, 60, 200] : [30, 40, 80]); } catch(e){}
+}
+
+/* ================= actions ================= */
+function openStage(sid){
+  if (!findStage(sid)) return;
+  openSid = openSid === sid ? null : sid;
+  render();
+  if (openSid) document.getElementById('st-' + sid)?.scrollIntoView?.({ block: 'nearest' });
+}
+
+function emptyStages(){ return S.stages.map((st, i) => ({ st, i })).filter(x => !x.st.items.length); }
+
+const TPL = {
+  beach:    { th:'🏖️ ทะเล',   en:'🏖️ Beach',    pack:[['ชุดว่ายน้ำ','Swimsuit'],['ครีมกันแดด','Sunscreen'],['แว่นกันแดด','Sunglasses']],
+              day:[['เดินเล่นชายหาด','Beach walk','sight'],['ดำน้ำตื้น','Snorkeling','sight'],['อาหารทะเลสด','Fresh seafood','eat']] },
+  city:     { th:'🏙️ เมือง',   en:'🏙️ City',     pack:[['รองเท้าเดินสบาย','Comfy shoes'],['แบตสำรอง','Power bank']],
+              day:[['ชมวิวจุดเด่น','City viewpoint','sight'],['ช้อปปิ้งตลาด','Market shopping','shop'],['ลองอาหารท้องถิ่น','Local food','eat']] },
+  mountain: { th:'⛰️ ภูเขา',   en:'⛰️ Mountain', pack:[['เสื้อกันหนาว','Warm jacket'],['ถุงเท้าสำรอง','Spare socks'],['ยาแก้ปวด','Pain relief']],
+              day:[['เดินป่า','Hike','nature'],['ชมวิวยอดเขา','Summit view','sight'],['ถ่ายรูปพาโนรามา','Panorama photo','sight']] },
+  business: { th:'💼 ธุรกิจ',  en:'💼 Business', pack:[['บัตรประชาชน','ID card'],['ชุดสูท','Suit'],['เอกสารประชุม','Meeting papers']],
+              day:[['ประชุมลูกค้า','Client meeting','travel'],['ดินเนอร์กับทีม','Team dinner','eat'],['ซื้อของฝาก','Souvenirs','shop']] },
+};
+function applyTemplate(id){
+  const tpl = TPL[id]; if (!tpl) return;
+  const isTh = lang === 'th';
+  let added = 0;
+  const addOnce = (st, text, cat) => {
+    if (st.items.some(it => itemText(it) === text)) return;
+    st.items.push({ id: uid(), text, cat, done: false }); added++;
+  };
+  S.stages.forEach((st, j) => {
+    if (st.kind === 'pack') tpl.pack.forEach(([th, en]) => addOnce(st, isTh ? th : en, 'pack'));
+    if (st.kind === 'day'){ const [th, en, cat] = tpl.day[j % tpl.day.length]; addOnce(st, isTh ? th : en, cat); }
+  });
+  save(); render();
+  notice(isTh ? `เพิ่มภารกิจ ${added} รายการ` : `Added ${added} missions`);
+}
+
+function fillEmpty(){
+  emptyStages().forEach(({ st }) => {
+    const idx = S.stages.indexOf(st);
+    const key = st.kind === 'pack' ? 'passport' : st.kind === 'home' ? 'goHome' : idx === 1 ? 'goDest' : 'sightsee';
+    st.items.push({ id: uid(), key, cat: st.kind === 'pack' ? 'pack' : key === 'sightsee' ? 'sight' : 'travel', done: false });
+  });
+  save(); render();
+}
+
+function startGame(){
+  const empty = emptyStages();
+  if (empty.length){
+    document.getElementById('starterr').textContent = L().emptyDays(empty.map(x => stageTitle(x.st, x.i)).join(', '));
+    document.getElementById('fillbtn').classList.remove('hidden');
+    document.querySelector(`[data-sid="${empty[0].st.id}"]`)?.scrollIntoView?.({ block: 'center' });
+    return;
+  }
+  S.phase = 'play';
+  const cur = firstOpen();
+  openSid = cur >= 0 ? S.stages[cur].id : null;
+  save(); render();
+  window.scrollTo?.(0, 0);
+}
+
+function shrinkImage(file){
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const max = 900, s = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        resolve(c.toDataURL('image/jpeg', 0.72));
+      };
+      img.onerror = reject; img.src = fr.result;
+    };
+    fr.onerror = reject; fr.readAsDataURL(file);
+  });
+}
+
+async function addPhotos(sid, files){
+  const t = L();
+  const st = findStage(sid);
+  for (const f of files){
+    if (st.photos.length >= MAX_PHOTOS){ notice(t.photoMax); break; }
+    if (!f.type.startsWith('image/')) continue;
+    try {
+      const url = await shrinkImage(f);
+      st.photos.push(url);
+      if (!save()){ st.photos.pop(); notice(t.photoErr); break; }
+    } catch(e){ notice(t.photoErr); break; }
+  }
+  render();
+}
+
+document.addEventListener('click', e => {
+  if (e.target === modal) return closeModal();
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const a = el.dataset.act, sid = el.dataset.sid;
+  const t = L();
+
+  if (a === 'pick-lang'){ lang = el.dataset.lang; try { localStorage.setItem(LKEY, lang); } catch(e){} introStep = 1; render(); return; }
+  if (a === 'tour-next'){ if (introStep >= INTRO[lang].slides.length) return finishTour(); introStep++; render(); return; }
+  if (a === 'tour-prev'){ if (introStep > 1) introStep--; render(); return; }
+  if (a === 'tour-skip') return finishTour();
+  if (a === 'tour'){ introMode = 'tour'; introStep = 1; render(); return; }
+  if (a === 'lang'){ lang = lang === 'th' ? 'en' : 'th'; try { localStorage.setItem(LKEY, lang); } catch(e){} render(); if (editor.sid) renderEditor(); return; }
+  if (a === 'close') return closeModal();
+  if (a === 'reset') return askReset();
+  if (a === 'reset-yes'){ try { localStorage.removeItem(KEY); } catch(e){} S = null; openSid = null; closeModal(); window.scrollTo?.(0, 0); return; }
+  if (a === 'edit') return openEditor(sid);
+  if (a === 'cat'){ editor.cat = el.dataset.cat; renderEditor(); return; }
+  if (a === 'sug') return addItem(el.dataset.text);
+  if (a === 'add-item') return addItem(document.getElementById('ed-input')?.value);
+  if (a === 'del'){
+    const st = findStage(sid);
+    st.items = st.items.filter(x => x.id !== el.dataset.iid);
+    save(); renderEditor(); render(); return;
+  }
+  if (a === 'fill') return fillEmpty();
+  if (a === 'spend-add'){
+    const st = findStage(sid);
+    const amt = Math.round(Number(document.getElementById('sa-' + sid)?.value));
+    const note = (document.getElementById('sn-' + sid)?.value || '').trim().slice(0, 60);
+    if (!st || !(amt > 0)){ notice(lang === 'th' ? 'ใส่จำนวนเงินให้ถูกต้อง' : 'Enter a valid amount'); return; }
+    st.spend = spendOf(st).concat({ id: uid(), amt, note });
+    save(); render(); return;
+  }
+  if (a === 'spend-del'){
+    const st = findStage(sid);
+    if (st) st.spend = spendOf(st).filter(x => x.id !== el.dataset.eid);
+    save(); render(); return;
+  }
+  if (a === 'fx'){ try { localStorage.setItem(FXKEY, fxOn() ? '0' : '1'); } catch(e){} render(); return; }
+  if (a === 'tpl') return applyTemplate(el.dataset.tpl);
+  if (a === 'start') return startGame();
+  if (a === 'plan'){ S.phase = 'plan'; save(); render(); window.scrollTo?.(0, 0); return; }
+  if (a === 'open') return openStage(sid);
+  if (a === 'open-next'){ const nx = S.stages[Number(el.dataset.idx)]; closeModal(); if (nx){ openSid = nx.id; render(); } return; }
+  if (a === 'info') return openInfo();
+  if (a === 'backup') return openBackup();
+  if (a === 'import') return openImport();
+  if (a === 'import-go') return importGo();
+  if (a === 'dl-info') return downloadInfo();
+  if (a === 'png-info') return saveInfoPng();
+  if (a === 'copy-text' || a === 'copy-backup'){
+    const text = a === 'copy-text' ? plainText() : document.getElementById('bk').value;
+    const ok = () => { if (a === 'copy-backup') { try { localStorage.setItem(BKEY, String(Date.now())); } catch(e){} } notice(t.copied); };
+    if (navigator.clipboard?.writeText){ navigator.clipboard.writeText(text).then(ok, () => { const ta = document.getElementById('bk'); if (ta) { ta.select(); } notice(t.copyFail); }); }
+    else { const ta = document.getElementById('bk'); if (ta) { ta.select(); } notice(t.copyFail); }
+    return;
+  }
+  if (a === 'rmphoto'){
+    const st = findStage(sid);
+    st.photos.splice(Number(el.dataset.idx), 1);
+    save(); render(); return;
+  }
+  if (a === 'check'){
+    const st = findStage(sid);
+    const it = st.items.find(x => x.id === el.dataset.iid);
+    const before = isDone(st);
+    it.done = !it.done;
+    save(); render();
+    if (!before && isDone(st)) celebrate(st); else if (it.done) sfx('tick');
+  }
+});
+
+document.addEventListener('change', e => {
+  const f = e.target;
+  if (f.matches?.('input[type=file][data-photo-sid]')){
+    const files = Array.from(f.files || []);
+    if (files.length) addPhotos(f.dataset.photoSid, files);
+    return;
+  }
+  if (f.dataset?.field){
+    const st = findStage(f.dataset.sid);
+    if (!st) return;
+    if (f.dataset.field === 'budget'){ st.budget = Math.max(0, Math.round(Number(f.value) || 0)); }
+    else st[f.dataset.field] = f.value.trim().slice(0, f.dataset.field === 'memo' ? 200 : 80);
+    if (!save()) notice(L().photoErr);
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id === 'ed-input'){ e.preventDefault(); addItem(e.target.value); }
+  if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+});
+
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'setup') return;
+  e.preventDefault();
+  const t = L();
+  const f = new FormData(e.target);
+  const name = String(f.get('name') || '').trim();
+  const start = f.get('start'), end = f.get('end');
+  const err = document.getElementById('err');
+  if (!start || !end){ err.textContent = t.errDates; return; }
+  if (end < start){ err.textContent = t.errOrder; return; }
+  if (daysBetween(start, end).length > 60){ err.textContent = t.errLong; return; }
+  S = { trip: { name: name || t.defaultTrip, start, end }, phase: 'plan', guideSeen: false, stages: makeStages(start, end) };
+  openSid = null; save(); render(); window.scrollTo?.(0, 0);
+});
+
+window.addEventListener('tq:open', e => openStage(e.detail));
+
+/* ================= confetti ================= */
+const cv = document.getElementById('fx');
+const cx = cv.getContext('2d');
+let P = [], raf = 0;
+function sizeCanvas(){ const dpr = window.devicePixelRatio || 1; cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+addEventListener('resize', sizeCanvas); sizeCanvas();
+/* sound effects: synthesized with WebAudio, no audio files; follows the effects switch */
+let ac = null;
+function sfx(kind){
+  if (!fxOn()) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+    const t0 = ac.currentTime;
+    const tone = (f, at, dur, type, vol) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = type; o.frequency.setValueAtTime(f, t0 + at);
+      g.gain.setValueAtTime(0.0001, t0 + at);
+      g.gain.exponentialRampToValueAtTime(vol, t0 + at + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + at + dur);
+      o.connect(g).connect(ac.destination);
+      o.start(t0 + at); o.stop(t0 + at + dur + 0.02);
+    };
+    if (kind === 'tick'){ tone(740, 0, 0.07, 'triangle', 0.14); }
+    else if (kind === 'coin'){ tone(988, 0, 0.12, 'square', 0.06); tone(1319, 0.07, 0.28, 'square', 0.06); }
+    else if (kind === 'champ'){
+      [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.14, 0.32, 'triangle', 0.12));
+      tone(1047, 0.6, 0.9, 'sine', 0.12); tone(784, 0.6, 0.9, 'sine', 0.08);
+    }
+  } catch (e) {}
+}
+function burst(n){
+  if (!fxOn()) return;
+  for (let i = 0; i < n; i++) P.push({ x: innerWidth / 2, y: innerHeight * 0.35, vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4, s: 4 + Math.random() * 6, c: COLORS[i % COLORS.length], r: Math.random() * 6, vr: (Math.random() - .5) * .3, t: 0 });
+  if (!raf) loop();
+}
+function loop(){
+  cx.clearRect(0, 0, innerWidth, innerHeight);
+  P.forEach(p => { p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.t++;
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c; cx.globalAlpha = Math.max(0, 1 - p.t / 160); cx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); cx.restore(); });
+  P = P.filter(p => p.t < 160 && p.y < innerHeight + 20);
+  raf = P.length ? requestAnimationFrame(loop) : 0;
+}
+
+render();
+</script>
+
+</body>
+</html>

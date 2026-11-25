@@ -1,0 +1,14 @@
+{
+  "name": "Travel Quest",
+  "short_name": "Travel Quest",
+  "description": "เกมสะสมเหรียญการเดินทาง / Travel coin-collecting game",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f5ff",
+  "theme_color": "#2a9d8f",
+  "lang": "th",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
